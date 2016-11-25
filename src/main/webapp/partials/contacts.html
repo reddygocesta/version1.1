@@ -1,0 +1,304 @@
+<div class="dashboardPanel">
+<!-- navbar -->
+<div data-ng-include="'partials/navbar.html'"></div>
+<div class="wrapper" data-ng-class="myClass">
+<!-- Sidebar -->
+<div data-ng-include="'partials/sidebar.html'"></div>
+<!-- Page Content -->
+
+<div class="page-content-wrapper">
+	<ul class="breadcrumb_nav">
+		<li><a href="#/home">Home</a></li>
+		<li>Contact Management</li>
+		<li>Manage Contacts</li>
+	</ul>
+    <h2 class="page-title"><i class="fa fa-book" aria-hidden="true"></i> Manage Contacts</h2>
+    <!-- <span class="page-content">Welcome to Contacts Repository !</span> -->
+		<div class="manage-contacts">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default contact-panel">
+						<div class="panel-body">
+							<div class="configuration">
+								<div class="panel panel-default">
+									<div class="panel-body">
+										<div class="row">
+										
+										<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Contacts List Name</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" data-ng-model="searchContact.contactListName" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Country</label>
+														<div class="col-md-6" data-ng-init="fillCountryList()">
+															<select name="country" class="form-control" 
+															data-ng-model="searchContact.country" data-ng-options="country.countryName for country in countryList" ng-change="countryChange(searchContact.country)" >
+															<option value="" label="Select Country">Select Country</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Revenue</label>
+														<div class="col-md-6" data-ng-init="fillRevenues()">
+															<select name="revenue" class="form-control" 
+															data-ng-model="searchContact.revenue" data-ng-options="revenue.revenueName for revenue in revenueList" >
+															<option value="" label="Select Revenue">Select Revenue</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Company Size</label>
+														<div class="col-md-6" data-ng-init="fillCompanySizes()">
+															<select name="companySize" class="form-control" 
+															data-ng-model="searchContact.companySize" data-ng-options="companySize.companySizeName for companySize in companySizesList"  >
+															<option value="" label="Select Company Size">Select Company Size</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Campaign Name</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.campaign" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">State</label>
+														<div class="col-md-6">
+															<select name="state" class="form-control"
+															data-ng-model="searchContact.state" data-ng-options="state.stateName for state in stateList" >
+															<option value="" label="Select State">Select State</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Industry</label>
+														<div class="col-md-6" data-ng-init="fillIndustries()">
+															<select name="industry" class="form-control" 
+															data-ng-model="searchContact.industry" data-ng-options="industry.industryName for industry in industryDetailsList"  ng-change="IndustryChange(searchContact.industry)">
+															<option value="" label="Select Industry">Select Industry</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Contact Status</label>
+														<div class="col-md-6" data-ng-init="fillContactStatus()">
+															<select name="contactStatus" class="form-control" 
+															data-ng-model="searchContact.contactStatus" data-ng-options="contactStatus.status for contactStatus in contactStatuslist"  >
+															<option value="" label="Select Contact Status">Select Contact Status</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Job Function</label>
+														<div class="col-md-6" data-ng-init="fillJobFunctions()">
+															<select name="jobFunction" class="form-control" 
+															data-ng-model="searchContact.jobFunction" data-ng-options="jobFunction.jobFunctionName for jobFunction in jobFunctionList"  >
+															<option value="" label="Select Function">Select Function</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">SIC Code</label>
+														<div class="col-md-6">
+															<select name="sicCode" class="form-control"
+															data-ng-model="searchContact.sicCode" data-ng-options="sicCode.sicCodeName for sicCode in sicCodeList" >
+															<option value="" label="Select SIC Code">Select SIC Code</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+										<div class="advanced-search-btn pull-right" ng-click="advancedsearchtoggle = !advancedsearchtoggle"><i class="fa fa-plus" aria-hidden="true" ng-class="{'glyphicon-minus' : item.expanded, 'glyphicon-plus' : !item.expanded}" ></i> Advanced Search</div>
+												<div class="clear"></div>
+										
+										
+										<div class="advanced-search" ng-show="advancedsearchtoggle">
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Contacts for Service Offering</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" wm-block wm-block-length="99" contactserviceautocomplete  ng-model="searchContact.contactServiceOffer" />
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Company</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.company" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Email ID</label>
+														<div class="col-md-6">
+														  <input type="email" data-ng-model="searchContact.contactEmailId" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Phone Number</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.phoneNumber" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Contact Added By</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.contactAddedBy"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Company Email Id</label>
+														<div class="col-md-6">
+														  <input type="email" data-ng-model="searchContact.companyEmailId" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Contact Source</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.contactSource"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">First Name</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.firstName"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Mobile</label>
+														<div class="col-md-6">
+														  <input type="text"  data-ng-model="searchContact.mobile" class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-4 control-label" for="">Contact Added Date</label>
+														<div class="col-md-6">														   
+														   <md-datepicker data-ng-model="searchContact.contactAddedDate" md-placeholder="Enter date"></md-datepicker>
+														   <!-- <input type="text" placeholder="Select Date" class="form-control" data-ng-model="contactAddedDate" ngdatepicker > -->
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Zip</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.zipcode"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Website</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.website"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Last Name</label>
+														<div class="col-md-6">
+														  <input type="text" data-ng-model="searchContact.lastName"  class="form-control" id="" placeholder="">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Job Title</label>
+														<div class="col-md-6" data-ng-init="fillJobTitles()">
+															<select name="searchContact.jobTitle" class="form-control" 
+															data-ng-model="jobTitle" data-ng-options="jobTitle.jobTitleName for jobTitle in jobTitleList"  >
+															<option value="" label="Select Job Title">Select Job Title</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-4 control-label" for="">Contact Last Updated</label>
+														<div class="col-md-6">
+														 <md-datepicker data-ng-model="searchContact.contactUpdateDate" md-placeholder="Enter date"></md-datepicker>
+														</div>
+													</div>
+												</div>
+											</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-info" ng-click="pageChanged()">Search</button>	
+									<button class="btn btn-warning" ng-click="resetContact()">Reset</button>			
+								</div>
+								<div class="alert alert-success" ng-show="false">
+									<span>The number of contacts for this Search are <strong>xyz.</strong> <a href="#">Click Here</a> to View Contact List.</span>
+								</div>
+								<div class="pull-right" data-ng-hide="isManager">
+									<a href="#"><button class="btn btn-success">Add Contact</button></a>			
+								</div>
+								<div class="clear"></div>
+								<h4>Contact List</h4>
+								<div class="table-responsive contact-list-table">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>S.No</th>
+											<th>Email ID</th>
+											<th>First Name</th>
+											<th>Last Name</th>
+											<th>Job Title</th>
+											<th>Contact Source</th>
+											<th>Company</th>
+											<th>Country</th>
+											<th>State</th>
+											<th>City</th>
+											<th>Industry</th>
+											<th>Actions</th>
+										</tr>
+									</thead>
+									<tbody>
+
+												<tr data-ng-repeat="contact in contactsList">
+													<td>{{contact.row}}</td>
+													<td>{{contact.contactEmailId}}</td>
+													<td>{{contact.firstName}}</td>
+													<td>{{contact.lastName}}</td>
+													<td>{{contact.jobTitle}}</td>
+													<td>{{contact.contactSource}}</td>
+													<td>{{contact.companyId.companyName}}</td>
+													<td>{{contact.companyId.addressDetails[0].country.countryName}}</td>
+													<td>{{contact.companyId.addressDetails[0].state.stateName}}</td>
+													<td>{{contact.companyId.addressDetails[0].city}}</td>
+													<td>{{contact.companyId.industry}}</td>
+													<td>
+														<a href="#/viewContact/{{contact.contactId}}"><button type=button class="btn btn-primary btn-xs" title="View"><i class="fa fa-eye" aria-hidden="true"></i></button></a> 
+														<button type=button class="btn btn-info btn-xs" title="Edit" data-ng-hide="isManager"><i class="fa fa-pencil" aria-hidden="true"></i></button> 
+														<button type=button class="btn btn-danger btn-xs" title="Delete" data-ng-hide="isManager"><i class="fa fa-times" aria-hidden="true"></i> </button>
+													</td>
+												</tr>
+									</tbody>
+								</table>
+								</div>
+								<div class="pull-right">
+									<pagination total-items="total" ng-model="currentPage" ng-change="pageChanged()" items-per-page="10"></pagination>
+								</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="copyright-text">Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>. All Rights Reserved.</div>
+<!-- /#page-content-wrapper -->
+</div>
+</div>
+</div>
+</div>
+</div>

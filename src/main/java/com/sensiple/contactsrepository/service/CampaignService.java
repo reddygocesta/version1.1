@@ -1,0 +1,14 @@
+package com.sensiple.contactsrepository.service;
+
+import java.util.List;
+
+import com.sensiple.contactsrepository.model.CampaignDetails;
+
+public interface CampaignService {
+
+List<CampaignDetails> getCampaignList(int startRecord, int recordToShow,
+		String campaignName, int campaignNumber, int businessUnit,
+		int campaignTypeId, String ownerName, int region, int campaignStatusId,
+		String serviceOffering, String campaignRunDate) throws Exception;
+
+}

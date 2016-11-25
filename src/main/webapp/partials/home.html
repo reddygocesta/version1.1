@@ -1,0 +1,55 @@
+<div class="dashboardPanel" ng-controller="HomeController">
+<!-- navbar -->
+<div ng-include="'partials/navbar.html'"></div>
+<div class="wrapper" ng-class="myClass">
+<!-- Sidebar -->
+<div ng-include="'partials/sidebar.html'"></div>
+<!-- Page Content -->
+<div class="page-content-wrapper">
+		<ul class="breadcrumb_nav">
+			<li><a href="#/home">Home</a></li>
+		</ul>
+        <h2 class="page-title"><i class="fa fa-desktop" aria-hidden="true"></i> Dashboard</h2>
+		<div class="home-page">
+        <span class="page-content">Welcome to Contacts Repository !</span>
+		<div>
+			<div class="row">
+				<div class="col-md-4">
+					<div class="panel panel-default contact-panel">
+						<h1 class="panel-title-contact">Contacts</h1>
+						<div class="panel-body">
+							<div class="row"><span class="col-md-10">Number of contacts available in the system</span><span class="count col-md-1">10</span></div>
+							<div class="row"><span class="col-md-10">Number of contacts added in the system</span><span class="count col-md-1">20</span></div>
+							<div class="row"><span class="col-md-10">Total number of contacts in the system</span><span class="count col-md-1">30</span></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-default campaign-panel">
+						<h1 class="panel-title-campaign">Campaign</h1>
+						<div class="panel-body">
+							<div class="row"><span class="col-md-10">Number of Campaign in the system</span><span class="count col-md-1">10</span></div>
+							<div class="row"><span class="col-md-10">Number of Open Campaign in the system</span><span class="count col-md-1">20</span></div>
+							<div class="row"><span class="col-md-10">Number of Campaign in Run state</span><span class="count col-md-1">30</span></div>
+							<div class="row"><span class="col-md-10">Number of Campaigns who lead time is over and contacts status not updated</span><span class="count col-md-1">40</span></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-default approval-panel">
+						<h1 class="panel-title-approval">Approval</h1>
+						<div class="panel-body">
+							<div class="row"><span class="col-md-10">Incoming approvals today</span><span class="count col-md-1">10</span></div>
+							<div class="row"><span class="col-md-10">Total approvals pending</span><span class="count col-md-1">20</span></div>
+							<div class="row"><span class="col-md-10">Number of contacts deleted</span><span class="count col-md-1">30</span></div>
+							<div class="row"><span class="col-md-10">Number of Campaigns deleted</span><span class="count col-md-1">40</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="copyright-text">Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>. All Rights Reserved.</div>
+</div>
+<!-- /#page-content-wrapper -->
+</div>
+</div>

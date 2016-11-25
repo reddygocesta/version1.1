@@ -1,0 +1,27 @@
+<div class="sidebar-wrapper">
+        <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
+			<li class="active">
+                <a href="#/home"><span class="fa-stack fa-lg pull-left"><i class="fa fa-th fa-stack-1x" aria-hidden="true"></i></span> Dashboard</a>
+            </li>
+			<li data-ng-show="isAdmin">
+                <a href data-ng-click="toggle = !toggle"><span class="fa-stack fa-lg pull-left"><i class="fa fa-user fa-stack-1x" aria-hidden="true"></i></span> Admin<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                	<ul data-ng-show="toggle" class="nav-pills nav-stacked sub-menu" style="list-style-type:none;">
+                        <li><a href="#/users"><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Manage Users</a></li>
+                        <li><a href="#/configuration"><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Configuration</a></li>
+                    </ul>
+            </li>
+			<li>
+                <a href data-ng-click="toggle2 = !toggle2"><span class="fa-stack fa-lg pull-left"><i class="fa fa-phone-square fa-stack-1x" aria-hidden="true"></i></span> Contact Management<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                	<ul data-ng-show="toggle2" class="nav-pills nav-stacked sub-menu" style="list-style-type:none;">
+                        <li><a href="#/contacts"><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Manage Contacts</a></li>
+                        <li><a href=""><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Manage Organizations</a></li>
+						<li data-ng-hide="isManager"><a href="#/upload"><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Upload Contacts</a></li>
+                   
+                    </ul>
+            </li>
+            <li>
+				<a href="#/campaigns"><span class="fa-stack fa-lg pull-left"><i class="fa fa-bullhorn fa-stack-1x" aria-hidden="true"></i></span> Campaign Management</a>
+            </li>
+            
+        </ul>
+</div>

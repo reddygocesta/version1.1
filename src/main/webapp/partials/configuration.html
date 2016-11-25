@@ -1,0 +1,308 @@
+<div class="dashboardPanel" data-ng-controller="HomeController">
+	<!-- navbar -->
+	<div data-ng-include="'partials/navbar.html'"></div>
+	<div class="wrapper" data-ng-class="myClass">
+		<!-- Sidebar -->
+		<div data-ng-include="'partials/sidebar.html'"></div>
+		<!-- Page Content -->
+		<div class="page-content-wrapper">
+			<ul class="breadcrumb_nav">
+				<li><a href="#/home">Home</a></li>
+				<li>Admin</li>
+				<li>Configuration</li>
+			</ul>
+			<h2 class="page-title"><i class="fa fa-cogs" aria-hidden="true"></i> Configuration</h2>
+			<div class="alert alert-success" data-ng-show="messages">
+				<button type="button" class="close" data-ng-click="switchMessage('messages')">x</button>{{messages}}
+			</div>
+			<!-- <span class="page-content">Welcome to Contacts Repository !</span> -->
+			<div class="configuration-page">
+				<div class="row">
+				<form name="form.configuration" autocomplete="off" novalidate>
+					<div class="col-md-12">
+						<div class="panel panel-default contact-panel">
+							<div class="panel-body">
+								<div class="configuration row">
+									<div class="col-md-6">
+										<h4>Field Configuration</h4>
+										<div class="panel panel-default">
+											<div class="panel-body">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span
+															class="required">*</span>Campaign Lead Time <span
+															data-toggle="tooltip"
+															tooltip="This is the global lead time for a Campaign which decides the availability of a contact"
+															tooltip-placement="right"><sup><i
+																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+														<div class="col-md-3">
+															<input type="number" wm-block wm-block-length="2"
+																class="form-control"
+																data-ng-model="configuration.campaignLeadTime" min="1"
+																max="999" ng-keypress="updateBody()" required>
+																<input type ="hidden" data-ng-model = "configuration.userId" />
+														</div>
+														<div class="col-md-3">
+
+															<select class="form-control" 
+																data-ng-model="configuration.campaignLeadTimeType"
+																ng-options="day as day.name for day in daytypes track by day.id"
+																required>
+															</select>
+														</div>
+														
+													</div>
+												</div>
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span
+															class="required">*</span>Allow Assign Contacts <span
+															data-toggle="tooltip"
+															tooltip="The time before which a user is allowed to assign contacts to a campaign"
+															tooltip-placement="right"><sup><i
+																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+														<div class="col-md-3">
+															<input type="number" wm-block wm-block-length="2"
+																class="form-control"
+																data-ng-model="configuration.allowAssignContacts"
+																 min="1" max="999" ng-keypress="updateBody()" required>
+														</div>
+														<div class="col-md-3">
+															<select class="form-control" data-ng-model="configuration.allowAssignContactsType"
+																data-ng-options="day as day.name for day in daytypes track by day.id">
+															</select>
+														</div>
+													</div>
+													
+												</div>
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span
+															class="required">*</span>Delete Threshold <span
+															data-toggle="tooltip"
+															tooltip="The time after which the contacts deleted are completely deleted from the system"
+															tooltip-placement="right"><sup><i
+																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+														<div class="col-md-3">
+															<input type="number" wm-block wm-block-length="2"
+																class="form-control"
+																data-ng-model="configuration.deleteThreshold" 
+																 min="1" max="999" ng-keypress="updateBody()" required>
+														</div>
+														<div class="col-md-3">
+															<select class="form-control"
+																data-ng-model="configuration.deleteThresholdType"
+																data-ng-options="day as day.name for day in daytypes track by day.id">
+															</select>
+														</div>
+													</div>
+												</div>
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span
+															class="required">*</span>Save Search Threshold <span
+															data-toggle="tooltip"
+															tooltip="The time after which search criteria save with a name is auto deleted"
+															tooltip-placement="right"><sup><i
+																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+														<div class="col-md-3">
+															<input type="number" wm-block wm-block-length="1"
+																class="form-control"
+																data-ng-model="configuration.saveSearchThreshold"
+																  min="1" max="99" ng-keypress="updateBody()" required>
+														</div>
+														<div class="col-md-3">
+															<select class="form-control"
+																data-ng-model="configuration.saveSearchThresholdType"
+																data-ng-options="day as day.name for day in daytypes track by day.id">
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<h4>Contact Status mapping</h4>
+
+										<div class="panel panel-default">
+											<div class="panel-body">
+												<fieldset data-ng-repeat="mapping in mappings">
+													<div class="form-horizontal">
+														<div class="form-group">
+															<label class="col-md-6 control-label" for="fields">{{mapping.status}}</label>
+															<div class="col-md-6">
+																<select class="form-control" data-ng-model="configuration.campaignContactStatus"
+																	data-ng-options="status as status.campaignStatus for status in mapping.campaignContactStatus track by status.campaignContactStatusId">
+																	<option value="">Select Status</option>
+																</select>
+															</div>
+														</div>
+													</div>
+												</fieldset>
+											</div>
+											<div class="alert alert-danger" data-ng-show="campaignMsg">
+				                   <button type="button" class="close" data-ng-click="switchMessage('campaignMsg')">x</button>{{campaignMsg}}
+			                           </div>
+										</div>
+										<div class="field-campaign-panel">
+											<div class="form-horizontal">
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span
+														class="required">*</span>Maximum Campaigns Allowed <span
+														data-toggle="tooltip"
+														tooltip="This is the maximum number of active campaigns that a user can have"
+														tooltip-placement="right"><sup><i
+																class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+													<div class="col-md-6">
+														<input type="number" wm-block wm-block-length="2"
+															class="form-control" placeholder="3"
+															data-ng-model="configuration.maximumCompaignsAllowed"
+															 min="1" max="999" ng-keypress="updateBody()" required>
+													</div>
+												</div>
+											</div>
+											<div class="form-horizontal">
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span
+														class="required">*</span>Contact Availability <span
+														data-toggle="tooltip"
+														tooltip="This is the global value that decides the contacts availability for the contact status 'Should not be reached' contacts if they can be reached for other service offerings"
+														tooltip-placement="right"><sup><i
+																class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+													<div class="col-md-6">
+														<select class="form-control"
+															data-ng-model="configuration.contactAvailability">
+															<option  value="Never">Never</option>
+															<option value="Other service offerings">Other
+																service offerings</option>
+														</select>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="text-center">
+									<button class="btn btn-success"
+										data-ng-click="saveFieldConfig()"
+										data-ng-disabled="form.configuration.$invalid">Save</button>
+								</div>
+							</div>
+						</div>
+					</div>
+                   </form>
+					<div class="col-md-12">
+					   
+						<div class="panel panel-default campaign-panel">
+							<div class="panel-body">
+							<form name="form.campaign" >
+								<div class="configuration">
+									<h4>Campaign Configuration</h4>
+									<div class="panel panel-default">
+										<div class="panel-body">
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-horizontal">
+														<div class="form-group">
+															<label class="col-md-6 control-label" for=""><span
+														class="required">*</span> Campaign
+																Owner Name</label>
+															<div class="col-md-6">
+      															<input type="text" class="form-control" wm-block wm-block-length="39" campaignownerautocomplete  ng-model="campaignConfiguration.OwnerName" ng-blur="clearfield()" required/>
+                                                            </div>
+											           </div>
+											           <div class="form-group">
+															<label class="col-md-6 control-label" for=""><span
+														class="required">*</span> Country</label>
+															<div class="col-md-6" data-ng-init="fillCountryList()">
+																<select  class="form-control" 
+																data-ng-model="campaignConfiguration.country" data-ng-options="country.countryName for country in countryList" ng-change="countryChange(campaignConfiguration.country)" required>
+																<option value="" label="Select Country">Select Country</option>
+																</select>
+															</div>
+														</div>
+											           
+													</div>
+													</div>
+												
+												<div class="col-md-6">
+													<div class="form-horizontal">
+														<div class="form-group">
+															<label class="col-md-6 control-label" for=""><span
+														class="required">*</span> Service
+																Offering</label>
+															<div class="col-md-6">
+																<input type="text" class="form-control" wm-block wm-block-length="99" serviceautocomplete  ng-model="campaignConfiguration.serviceOffering.serviceName" ng-blur="clearfield()"  required/>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="col-md-6 control-label" for=""><span
+														class="required">*</span> State</label>
+															<div class="col-md-6">
+																<select name="state" class="form-control"
+																data-ng-model="campaignConfiguration.state" data-ng-options="state.stateName for state in stateList" required>
+																<option value="" label="Select State">Select State</option>
+																</select>
+															</div>
+														</div>
+													</div>
+												</div>
+												
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									<div class="text-center">
+										<button class="btn btn-success"
+											data-ng-click="saveCampaignConfig()" data-ng-disabled="form.campaign.$invalid">Configure</button>
+									</div>
+									</form> 
+									<h4>Configuration List</h4>
+									<table class="table table-bordered table-striped">
+										<thead>
+										<tr>
+											<th></th>
+											<th>Campaign Owner</th>
+											<th>Service Offering</th>
+											<th>Country</th>
+											<th>State</th>
+										</tr>
+										</thead>
+										
+										<tbody>
+											<tr data-ng-repeat="campaignConfiguration in campaignConfigurationList">
+													<td><input type="checkbox" ng-model="campaignConfiguration.checkedStatus"></td>
+													<td>{{campaignConfiguration.campaingOwner.firstName +" " +campaignConfiguration.campaingOwner.lastName}}</td>
+													<td>{{campaignConfiguration.serviceOffering.serviceName}}</td>
+													<td>{{campaignConfiguration.state.stateName}}</td>
+													<td>{{campaignConfiguration.country.countryName}}</td>
+												</tr>
+										</tbody>
+									</table>
+									<div class="pull-right">
+									<pagination total-items="total" ng-model="pagination.currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
+									</div>
+									<div class="clear"></div>
+									<div class="text-center">
+										<button class="btn btn-danger" data-ng-click="saveUnConfigCampaigns($event)">Deconfigure</button>
+									</div>
+								</div>
+								
+								
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="copyright-text">
+					Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>.
+					All Rights Reserved.
+				</div>
+			</div>
+			<!-- /#page-content-wrapper -->
+		</div>
+
+	</div>
+</div>

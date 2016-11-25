@@ -1,0 +1,34 @@
+<div class="loginPanel" data-ng-init="checkCookie()">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3">
+					<div class="panel panel-default">
+						<h1 class="panel-title">CONTACTS REPOSITORY</h1>
+						
+						<div class="panel-body">
+							<span ng-show="authenticationError" class="help-block">
+		                          Please check your credentials and try again.
+		                     </span>
+							<form>								
+								<div class="form-group input-group" ng-class="{'has-error is-focused' : authenticationError}">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+									<input class="form-control" placeholder="Username" ng-model="username" name="username" type="text" required="required">
+								</div>
+								
+								<div class="form-group input-group">
+									<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+									<input class="form-control" placeholder="Password" ng-model="password" name="password" type="password" required>
+								</div>
+								<div class="forgot-password"><a href="#/forgotPassword">Forgot Password ?</a></div>
+								<div class="checkbox">
+									<label><input name="remember" ng-model="keepMe" type="checkbox" value="Remember Me"> Keep me logged in</label>
+									<button ng-click="login()" ng-enter = "login()" class="btn btn-success pull-right">LOGIN</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="copyright-text">Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>. All Rights Reserved.</div>
+	</div>
