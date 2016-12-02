@@ -17,8 +17,6 @@ public interface UserDetailsDAO {
 	
 	public int addUser(final User user) throws Exception; 
 
-	List<Role> getRole() throws Exception; 
-	
 	Role role(int roleid) throws Exception;
 
 	List<User> getUsersList(int startRecord, int recordToShow, String firstName, String lastName, String emailAddress, String roleName, String phoneNumber)throws Exception;
@@ -29,8 +27,6 @@ public interface UserDetailsDAO {
 	
 	List<PasswordHistory> getPasswordList(final long userId)throws Exception;
 	
-	List<User> searchByFirstName(User user) throws Exception;
-	
 	boolean isEmailExist(String emailAddress) throws Exception;
 	
 	boolean deleteUser(User user) throws Exception;
@@ -39,7 +35,7 @@ public interface UserDetailsDAO {
 	
 	List<DaysType> getDaysType() throws Exception;
 	
-	List<CampaignContactStatus> getStatusMappings(int id) throws Exception;
+	List<CampaignContactStatus> getStatusMappings() throws Exception;
 	
 	int updatePassword(String password, String emailAddress) throws Exception;
 }

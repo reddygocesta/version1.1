@@ -154,8 +154,8 @@ myapp.service('UsersService', function ($log, $resource, $http) {
         	 
         },getRoles: function () {
         	
-       	 return $http.get("users/getRole").then( function(res) {
-    			return res.data;
+       	 return $http.get("common/getRole").then( function(res) {
+    			return res.data.roleList;
     		});
        	 
        },deleteUser: function (data) {
@@ -239,9 +239,51 @@ myapp.service('ContactsService', function ($log, $resource, $http) {
       .error(function(error){
    	   console.log(error);        	   
       });
-    }
-  
-    }
+    },
+    deleteContact: function (data) {
+    	var config = {
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            };
+    	
+    	var data1 = {
+        		contactsId: data
+        	};
+    	var formData = new FormData();
+        formData.append("contactsId",data);
+      	 return $http.post("contact/deleteContact", $.param({contactsId: data}), config).then( function(res) {
+   			return res.data;
+   		});
+    },
+    getLocation : function (data) {
+       	
+     	 return /*$http.post("contact/getLocationDetails", data).then( function(res) {
+    			return res.data;*/
+    		
+    		$http({
+			   method: 'POST',
+			   url: "contact/getLocationDetails",
+			   headers : {
+                	'Content-Type' : undefined
+                },
+			   transformRequest : angular.identity,
+			   data: data
+			 }).then(function (result) {
+			     
+			     return result.data;
+  		});
+    },
+    saveContactInfo: function (data) {
+   	 	return $http.post("contact/addContact", data).then( function(res) {
+			return res.data;
+		});
+    },
+	getContactInfo: function (contactId) {
+    	
+		return $http.get("contact/viewContact/"+contactId).then( function(res) {
+			return res.data;
+		});
+	}
+   }
     
 });
 
@@ -271,6 +313,19 @@ myapp.service('EmailCheckService', function ($http ,$log, $resource) {
     
 });
 
+myapp.service('ContactEmailCheckService', function ($http ,$log, $resource) {
+    return {
+        checkUniqueValue : function (id, property, value) {
+		  var data = {
+			emailAddress: value
+		  };
+		  return $http.post("contact/isContactEmailExist", data).then( function(res) {
+			return res.data;
+		  });
+		}
+    }
+    
+});
 /*
  * UploadContact service is used to upload the file and also used for download template.
  * Get the error contacts file
@@ -333,6 +388,12 @@ myapp.service('CampaignService', function ($log, $resource, $http) {
 */
 			    });
        },
+       getCampaignCategory: function () {
+          	
+      	 return $http.get("common/getCampaignCategory").then( function(res) {
+   			return res.data;
+   		})
+       },
        getCampaignStatus: function () {
        	
         	 return $http.get("common/getCampaignStatus").then( function(res) {
@@ -362,7 +423,17 @@ myapp.service('CampaignService', function ($log, $resource, $http) {
     	   return $http.get("common/getContactServiceOfferingList").then( function(res) {
   				return res.data;
   			})
-       }
+       },
+      
+        checkUniqueContactSearchName: function (value) {
+    	    
+    	    var formdata = { 
+    	    		searchSaveName: value
+    	  	 };
+    	     return $http.post("campaign/isContactSearchNameExist", formdata).then( function(res) {
+    				return res.data;
+    			  });
+    	 }
     }
 });
 
@@ -410,4 +481,17 @@ myapp.service('ConfigurationService', function ($log, $resource, $http) {
        }
     }
 });
-
+myapp.service('CompanyUniqueService', function ($http ,$log, $resource) {
+    return {
+        checkUniqueValue : function (companyName, websiteName) {
+		  var data = {
+			companyName: companyName,
+			websiteName: websiteName
+		  };
+		  return $http.post("contact/isCompanyExist", data).then( function(res) {
+			return res.data;
+		  });
+		}
+    }
+    
+});

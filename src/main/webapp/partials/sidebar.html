@@ -20,7 +20,10 @@
                     </ul>
             </li>
             <li>
-				<a href="#/campaigns"><span class="fa-stack fa-lg pull-left"><i class="fa fa-bullhorn fa-stack-1x" aria-hidden="true"></i></span> Campaign Management</a>
+				<a href data-ng-click="toggle3 = !toggle3"><span class="fa-stack fa-lg pull-left"><i class="fa fa-bullhorn fa-stack-1x" aria-hidden="true"></i></span> Campaign Management<i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                     <ul data-ng-show="toggle3" class="nav-pills nav-stacked sub-menu" style="list-style-type:none;">
+                        <li><a href="#/campaigns"><span class="fa-stack pull-left"><i class="fa fa-caret-right" aria-hidden="true"></i></span>Manage Campaigns</a></li>
+                      </ul>
             </li>
             
         </ul>

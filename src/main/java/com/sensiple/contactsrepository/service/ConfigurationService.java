@@ -5,6 +5,7 @@ import java.util.List;
 import com.sensiple.contactsrepository.model.CampaignConfiguration;
 import com.sensiple.contactsrepository.model.CampaignServiceOffering;
 import com.sensiple.contactsrepository.model.Configuration;
+import com.sensiple.contactsrepository.model.ContactStatus;
 import com.sensiple.contactsrepository.model.User;
 
 /**
@@ -27,5 +28,7 @@ public interface ConfigurationService {
 
 	List<CampaignConfiguration> getCampaingConfiguration(final int startRecord, int recordToShow)throws Exception ;
 
-	int deConfigureCampaign(final String configurationIds) throws Exception; 
+	int deConfigureCampaign(final String configurationIds) throws Exception;
+
+	List<ContactStatus> getContactStatus(String status) throws Exception ; 
 }

@@ -34,7 +34,7 @@
 					<!-- EMAIL -->
 					<div class="form-group">
 						<label><span class="required">*</span>Email Address</label>
-						<input type="email" placeholder="Email Address" name="email" class="form-control" data-ng-model="user.email" data-ng-disabled="user.id > 0" data-ng-minlength="1" data-ng-unique="ng-unique" data-text-maxlength="255" lowercase data-email-address="email-address"  data-ng-pattern="/^[a-z]+[a-z0-9._+-]+[a-z0-9]+@[a-z]+\.[a-z.]{2,5}$/" data-lower-case="lower-case" required>
+						<input type="email" placeholder="Email Address" name="email" class="form-control" data-ng-model="user.email" data-ng-disabled="user.id > 0" data-ng-minlength="1" data-ng-unique="ng-unique" data-text-maxlength="255" data-lowercase="lowercase" data-email-address="email-address"  data-ng-pattern="/^[a-z]+[a-z0-9._+-]+[a-z0-9]+@[a-z]+\.[a-z.]{2,5}$/" data-lower-case="lower-case" required>
 						<p data-ng-show="form.userForm.email.$error.unique" class="help-block">Email Address already exist.</p>
 						<p data-ng-show="!form.userForm.email.$error.unique && form.userForm.email.$invalid && !form.userForm.email.$pristine" class="help-block">Enter a valid email.</p>
 						<p data-ng-show="form.userForm.email.$error.minlength" class="help-block">Email Address is too short.</p>
@@ -47,7 +47,7 @@
 					<div class="form-group">
 						<label>Phone Number</label>
 						
-						<input type="text" placeholder="Phone Number" name="phoneNumber" class="form-control" data-ng-model="user.phoneNumber"  phone-input data-ng-digit="ng-digit" >
+						<input type="text" placeholder="Phone Number" name="phoneNumber" class="form-control" data-ng-model="user.phoneNumber"  data-phone-input="phone-input" data-ng-digit="ng-digit" >
 						<p data-ng-show="form.userForm.phoneNumber.$error.digit" class="help-block">Phone Number should be 10 digits.</p>
 						
 					</div>

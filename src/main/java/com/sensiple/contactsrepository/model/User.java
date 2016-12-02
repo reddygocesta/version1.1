@@ -35,6 +35,8 @@ public class User {
 	private int totalRecords;
 
 	private Set<Authority> authorities = new HashSet<Authority>();
+	
+	private long loggedBy;
 
 	public String getFirstName() {
 		return firstName;
@@ -146,6 +148,14 @@ public class User {
 
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
+	}
+
+	public long getLoggedBy() {
+		return loggedBy;
+	}
+
+	public void setLoggedBy(long loggedBy) {
+		this.loggedBy = loggedBy;
 	}
 
 }

@@ -1,5 +1,14 @@
 package com.sensiple.contactsrepository.utils;
 
+import java.util.List;
+
+import com.sensiple.contactsrepository.model.CompanySizeDetails;
+import com.sensiple.contactsrepository.model.CountryDetails;
+import com.sensiple.contactsrepository.model.IndustryDetails;
+import com.sensiple.contactsrepository.model.JobFunction;
+import com.sensiple.contactsrepository.model.RevenueDetails;
+import com.sensiple.contactsrepository.model.StateDetails;
+
 public class UploadMethodValidation {
 	
     
@@ -156,11 +165,11 @@ public class UploadMethodValidation {
 	    String revenueMessage = "";
 	    if(!UploadValidation.getNullAndEmpty(revenue)){
 	    	revenueMessage = revenueMessage + "Revenue is not empty";
-	    }else if(!UploadValidation.checkNumberOrNot(revenue)){
+	    }/*else if(!UploadValidation.checkNumberOrNot(revenue)){
 	    	revenueMessage = revenueMessage + "Enter valid Revenue";
 	    }else if(!UploadValidation.getFieldLength(revenue, UploadValidation.TWELVE)){
 	    	revenueMessage = revenueMessage + "The Revenue entered exceeds the maximum length";			    	 
-	    }
+	    }*/
 	    return revenueMessage;
     }
     
@@ -168,11 +177,11 @@ public class UploadMethodValidation {
 	    String companySizeMessage = "";
 	    if(!UploadValidation.getNullAndEmpty(companySize)){
 	    	companySizeMessage = companySizeMessage + "Company size is not empty";
-	    }else if(!UploadValidation.checkNumberOrNot(companySize)){
+	    }/*else if(!UploadValidation.checkNumberOrNot(companySize)){
 	    	companySizeMessage = companySizeMessage + "Enter valid Company size";
 	    }else if(!UploadValidation.getFieldLength(companySize, UploadValidation.TWELVE)){
 	    	companySizeMessage = companySizeMessage + "The Company size entered exceeds the maximum length";			    	 
-	    }
+	    }*/
 	    return companySizeMessage;
     }
     
@@ -180,9 +189,9 @@ public class UploadMethodValidation {
 	    String industryMessage = "";
 	    if(!UploadValidation.getNullAndEmpty(industry)){
 	    	industryMessage = industryMessage + "Industry is not empty";
-	    }else if(!UploadValidation.getFieldLength(industry, UploadValidation.FIFETY)){
+	    }/*else if(!UploadValidation.getFieldLength(industry, UploadValidation.FIFETY)){
 	    	industryMessage = industryMessage + "The Industry entered exceeds the maximum length";			    	 
-	    }
+	    }*/
 	    return industryMessage;
     }
     
@@ -191,7 +200,10 @@ public class UploadMethodValidation {
 	    if(UploadValidation.getNullAndEmpty(sicCode)){
 		     if(!UploadValidation.getFieldLength(sicCode, UploadValidation.FIFETY)){
 		    	 sicCodeMessage = sicCodeMessage + "The SIC code entered exceeds the maximum length";			    	 
-		     }
+		     }else if(!UploadValidation.checkNumberOrNot(sicCode)){
+		    	 sicCodeMessage = sicCodeMessage + "Enter valid sic code";
+			 }
+		     
 	    }
 	    return sicCodeMessage;
     }
@@ -248,9 +260,9 @@ public class UploadMethodValidation {
 	    String countryMessage = "";
 	    if(!UploadValidation.getNullAndEmpty(country)){
 	    	countryMessage = countryMessage + "Country is not empty";
-	    }else if(!UploadValidation.getFieldLength(country, UploadValidation.FIFETY)){
+	    }/*else if(!UploadValidation.getFieldLength(country, UploadValidation.FIFETY)){
 	    	countryMessage = countryMessage + "The Country entered exceeds the maximum length";			    	 
-	    }
+	    }*/
 	    return countryMessage;
     }
     
@@ -258,9 +270,9 @@ public class UploadMethodValidation {
 	    String stateMessage = "";
 	    if(!UploadValidation.getNullAndEmpty(state)){
 	    	stateMessage = stateMessage + "State is not empty";
-	    }else if(!UploadValidation.getFieldLength(state, UploadValidation.FIFETY)){
+	    }/*else if(!UploadValidation.getFieldLength(state, UploadValidation.FIFETY)){
 	    	stateMessage = stateMessage + "The State entered exceeds the maximum length";			    	 
-	    }
+	    }*/
 	    return stateMessage;
     }
     
@@ -286,4 +298,114 @@ public class UploadMethodValidation {
 	    }
 	    return zipcodeMessage;
     }
+    
+    public static String checkJobFunctionMetaDataInfo(List<JobFunction> jobFunctionList, String cellTextValue){	
+    	
+    	String jobFunctionValue =Constants.ERROR;
+    	
+    	if(jobFunctionList.size()>0){
+    		
+    		 for (JobFunction jobFun : jobFunctionList) {
+				   if(jobFun.getJobFunctionName().equals(cellTextValue)){
+					   jobFunctionValue=String.valueOf(jobFun.getJobFunctionId());
+					   break;
+				   }
+			   }
+    		
+    	}
+    	
+    	return jobFunctionValue;
+    }
+
+    public static String checkCountryDetailsMetaDataInfo(List<CountryDetails> countryList, String cellTextValue){	
+    	
+    	String conutryValue =Constants.ERROR;
+    	
+    	if(countryList.size()>0){
+    		
+    		 for (CountryDetails country : countryList) {
+				   if(country.getCountryName().equals(cellTextValue)){
+					   conutryValue=String.valueOf(country.getCountryId());
+					   break;
+				   }
+			   }
+    		
+    	}
+    	
+    	return conutryValue;
+    }
+
+    public static String checkStateDetailsMetaDataInfo(List<StateDetails> stateList, String cellTextValue){	
+	
+	String stateValue =Constants.ERROR;
+	
+	if(stateList.size()>0){
+		
+		 for (StateDetails state : stateList) {
+			   if(state.getStateName().equals(cellTextValue)){
+				   stateValue=String.valueOf(state.getStateId());
+				   break;
+			   }
+		   }
+		
+	}
+	
+	return stateValue;
+   }
+    
+    public static String checkIndustryDetailsMetaDataInfo(List<IndustryDetails> industryDetailsList, String cellTextValue){	
+    	
+    	String industryValue =Constants.ERROR;
+    	
+    	if(industryDetailsList.size()>0){
+    		
+    		 for (IndustryDetails industry : industryDetailsList) {
+				   if(industry.getIndustryName().equals(cellTextValue)){
+					   industryValue=String.valueOf(industry.getIndustryId());
+					   break;
+				   }
+			   }
+    		
+    	}
+    	
+    	return industryValue;
+    }
+    
+    public static String checkRevenueDetailsMetaDataInfo(List<RevenueDetails> revenueDetailslist, String cellTextValue){	
+    	
+    	String revenueValue =Constants.ERROR;
+    	
+    	if(revenueDetailslist.size()>0){
+    		
+    		 for (RevenueDetails revenue : revenueDetailslist) {
+				   if(revenue.getRevenueName().equals(cellTextValue)){
+					   revenueValue=String.valueOf(revenue.getRevenueId());
+					   break;
+				   }
+			   }
+    		
+    	}
+    	
+    	return revenueValue;
+    }
+    
+    public static String checkCompanySizeMetaDataInfo(List<CompanySizeDetails> companySizeDetailsList, String cellTextValue){	
+    	
+    	String companySizeValue =Constants.ERROR;
+    	
+    	if(companySizeDetailsList.size()>0){
+    		
+    		 for (CompanySizeDetails companySize : companySizeDetailsList) {
+				   if(companySize.getCompanySizeName().equals(cellTextValue)){
+					   companySizeValue=String.valueOf(companySize.getSizeId());
+					   break;
+				   }
+			   }
+    		
+    	}
+    	
+    	return companySizeValue;
+    }
+    
+    
 }

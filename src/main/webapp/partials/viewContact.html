@@ -18,9 +18,9 @@
 			<div class="row">
 				<div class="col-md-12">
 					<div class="configuration">
-						<div class="panel panel-default contact-panel">
+						<div class="panel panel-default">
 							<div class="panel-body">
-							<h4 class="panel-title-contact">Contact Information</h4>
+							<h4 class="panel-title-campaign">Contact Information</h4>
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-horizontal">
@@ -74,7 +74,7 @@
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Job Title</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.jobTitle}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.jobTitleObj.jobTitleName}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Phone Number</strong></label>
@@ -90,7 +90,7 @@
 							</div>
 						</div>
 				
-						<div class="panel panel-default campaign-panel">
+						<div class="panel panel-default">
 							<div class="panel-body">
 							<h4 class="panel-title-campaign">Company Information</h4>
 								<div class="row">
@@ -98,15 +98,15 @@
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Company</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.companyName}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companyName}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Revenue</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.revenue}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.revenue}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Company Email Id</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.companyEmailId}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companyEmailId}}</label>
 											</div>
 										</div>
 									</div>
@@ -114,11 +114,11 @@
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Website</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.website}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.website}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>SIC Code</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.sicCode}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.sicCode}}</label>
 											</div>
 										</div>
 									</div>
@@ -126,11 +126,11 @@
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Company Size</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.companySize}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companySize}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Industry</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.industry}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.industry}}</label>
 											</div>
 										</div>
 									</div>
@@ -138,23 +138,23 @@
 							</div>
 						</div>
 						
-						<div class="panel panel-default approval-panel">
+						<div class="panel panel-default">
 							<div class="panel-body">
-							<h4 class="panel-title-approval">Location Details</h4>
+							<h4 class="panel-title-campaign">Location Details</h4>
 								<div class="row">
 									<div class="col-md-4">
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Address Line1</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].addressLine1}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].addressLine1}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Country</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].country.countryName}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].country.countryName}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Zip</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].zipCode}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].zipCode}}</label>
 											</div>
 										</div>
 									</div>
@@ -162,11 +162,11 @@
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Address Line2</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].addressLine2}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].addressLine2}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>State</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].state.stateName}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].state.stateName}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-1 control-label" for=""><input type="checkbox" ng-model="contact.companyId.addressDetails[0].headQuarters" ng-disabled="true" checked></label>
@@ -178,11 +178,11 @@
 										<div class="form-horizontal">
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>Suite</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].suite}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].suite}}</label>
 											</div>
 											<div class="form-group">
 												<label class="col-md-6 control-label" for=""><strong>City</strong></label>
-												<label class="col-md-6 control-label" for="">{{contact.companyId.addressDetails[0].city}}</label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetails[0].city}}</label>
 											</div>
 										</div>
 									</div>
@@ -190,9 +190,9 @@
 							</div>
 						</div>
 						
-						<div class="panel panel-default contact-panel">
+						<div class="panel panel-default">
 							<div class="panel-body">
-							<h4 class="panel-title-contact">Campaign Details</h4>
+							<h4 class="panel-title-campaign">Campaign Details</h4>
 								<table class="table table-bordered table-striped campaign-details-table">
 									<thead>
 										<tr>

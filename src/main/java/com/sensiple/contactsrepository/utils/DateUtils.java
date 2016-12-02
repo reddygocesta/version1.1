@@ -19,7 +19,7 @@ public class DateUtils {
 		}
 		SimpleDateFormat format = new SimpleDateFormat("MM-dd-yyy");
 		String result = format.format(date);
-		System.out.println(result);
+		
 			
 		return result;
 	}

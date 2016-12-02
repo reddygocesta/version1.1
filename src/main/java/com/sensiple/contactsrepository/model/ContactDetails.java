@@ -7,7 +7,7 @@ public class ContactDetails {
 	
 	private String contactEmailId;
 	
-	private CompanyDetails companyId;
+	private CompanyDetails companyDetails;
 	
 	private String firstName;
 	
@@ -41,8 +41,9 @@ public class ContactDetails {
 	
 	private String createdBy;
 	
+	private JobFunction jobFunctionObj;
 	
-	
+	private JobTitle jobTitleObj;
 
 	public String getCreatedBy() {
 		return createdBy;
@@ -98,14 +99,6 @@ public class ContactDetails {
 
 	public void setContactEmailId(String contactEmailId) {
 		this.contactEmailId = contactEmailId;
-	}
-
-	public CompanyDetails getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(CompanyDetails companyId) {
-		this.companyId = companyId;
 	}
 
 	public String getFirstName() {
@@ -194,6 +187,36 @@ public class ContactDetails {
 
 	public void setApprovedBy(String approvedBy) {
 		this.approvedBy = approvedBy;
+	}
+
+	/**
+	 * @return the companyDetails
+	 */
+	public CompanyDetails getCompanyDetails() {
+		return companyDetails;
+	}
+
+	/**
+	 * @param companyDetails the companyDetails to set
+	 */
+	public void setCompanyDetails(CompanyDetails companyDetails) {
+		this.companyDetails = companyDetails;
+	}
+
+	public JobFunction getJobFunctionObj() {
+		return jobFunctionObj;
+	}
+
+	public void setJobFunctionObj(JobFunction jobFunctionObj) {
+		this.jobFunctionObj = jobFunctionObj;
+	}
+
+	public JobTitle getJobTitleObj() {
+		return jobTitleObj;
+	}
+
+	public void setJobTitleObj(JobTitle jobTitleObj) {
+		this.jobTitleObj = jobTitleObj;
 	}
 
 }

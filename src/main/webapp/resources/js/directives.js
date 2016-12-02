@@ -26,7 +26,7 @@ myapp.directive('numbersOnly', function(){
 	           // again, and the 2nd time, the value will be undefined
 	           if (inputValue == undefined) return '' 
 	           var transformedInput = inputValue.replace(/[^0-9-]/g, ''); 
-console.log("value" + value);
+//console.log("value" + value);
 	           if (transformedInput!=inputValue) {
 				  modelCtrl.$setViewValue(transformedInput);
 	              modelCtrl.$render();
@@ -143,7 +143,7 @@ myapp.directive("ngDigit", function(EmailCheckService) {
 	        var currentValue = element.val();
 				
 				var condition = false;
-				console.log("Phone Number Length : "+element.val().length);
+				//console.log("Phone Number Length : "+element.val().length);
 				if(element.val().length == 0 || element.val().length == 14) {
 					condition = true;
 					ngModel.$setValidity('digit', condition); 
@@ -248,7 +248,7 @@ myapp.directive('fileModel', ['$parse', function ($parse) {
 
 myapp.filter('tel', function () {
     return function (tel) {
-        console.log(tel);
+        //console.log(tel);
         if (!tel) { return ''; }
 
         var value = tel.toString().trim().replace(/^\+/, '');
@@ -604,3 +604,354 @@ myapp.directive('contactserviceautocomplete', ['$http', function($http,$scope) {
         	};
     }
 }]);
+
+myapp.directive('companynameautocomplete', function($http, $compile) {
+    return function (scope, element, attrs) {
+    	
+        element.autocomplete({
+            minLength:1,
+            source:function (request, response) {
+            	var formData = new FormData();
+	            formData.append("companyName",request.term);
+			   
+			   $http({
+				   method: 'POST',
+				   url: "contact/getCompanyDetails",
+				   headers : {
+	                	'Content-Type' : undefined
+	                },
+				   transformRequest : angular.identity,
+				   data: formData
+				 }).then(
+				   function (result) {
+				     var data = result.data;
+				     response(data);
+				     if(result.data.length==0)
+			    	 {
+				    	 scope.contact.companyDetails.companyName='';
+			    	 }
+				   }, function (error) {
+				     var data = error.data;
+				   });
+            },
+            select:function (event, ui) {
+            	scope.contact.companyDetails = ui.item ;
+            	scope.getLocation(ui.item);
+            	scope.fillSicCodesfromIndustry(scope.contact.companyDetails.sicCodeDetails);
+            	scope.isCompanyModeChanged = true;
+				scope.isShowCompanyInfo = true;
+				scope.isShowAddCompanyBtn = true;
+                scope.$apply;
+                return false;
+            },
+            change:function (event, ui) {
+                if (ui.item === null) {
+                	scope.contact.companyDetails = null;
+                }
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        	  return $( "<li>" )
+        	    .data( "ui-autocomplete-item", item )
+        	    .append( "<a>" + item.companyName + "</a>")
+        	    		//+"<a href class='btn btn-success'> Add Company</a>" )
+        	    .appendTo( ul );
+        	};
+        	
+    }
+});
+
+myapp.directive('dynamic', function ($compile) {
+	  return {
+	    restrict: 'A',
+	    replace: true,
+	    link: function (scope, ele, attrs) {
+	      scope.$watch(attrs.dynamic, function(html) {
+	        ele.html(html);
+	        $compile(ele.contents())(scope);
+	      });
+	    }
+	  };
+	});
+myapp.directive('addcampaignownerautocomplete', ['$http', function($http,$scope) {
+    return function (scope, element, attrs) {
+        element.autocomplete({
+            minLength:1,
+            source:function (request, response) {
+            	var formData = new FormData();
+	            formData.append("ownerName",request.term);
+			   
+			   $http({
+				   method: 'POST',
+				   url: "configuration/getCampaignOwner",
+				   headers : {
+	                	'Content-Type' : undefined
+	                },
+				   transformRequest : angular.identity,
+				   data: formData
+				 }).then(
+				   function (result) {
+				     var data = result.data;
+				     if(result.data.length==0)
+				    	 {
+				    	 scope.campaignDetails.OwnerName='';
+				    	 }
+				     response(data);
+				   }, function (error) {
+				     var data = error.data;
+				   });
+            },
+            focus:function (event, ui) {
+                element.val(ui.item.firstName+' '+ui.item.lastName);
+                return false;
+            },
+            select:function (event, ui) {
+                scope.campaignDetails.campaingOwner = ui.item ;//campaingOwner
+                scope.$apply;
+                return false;
+            },
+            change:function (event, ui) {
+                if (ui.item === null) {
+                    scope.campaignDetails.campaingOwner.OwnerName = null;
+                    scope.campaignDetails.campaingOwner.OwnerName='';
+                }
+            },
+           
+              
+            }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        	  return $( "<li>" )
+        	    .data( "ui-autocomplete-item", item )
+        	    .append( "<a>" + item.firstName + "<br>" + item.lastName  + "</a>" )
+        	    .appendTo( ul );
+        	};
+    }
+}]);
+
+myapp.directive('addserviceautocomplete', ['$http', function($http,$scope) {
+    return function (scope, element, attrs) {
+        element.autocomplete({
+            minLength:1,
+            source:function (request, response) {
+            	var formData = new FormData();
+	            formData.append("serviceOfferingId",request.term);
+			   
+			   $http({
+				   method: 'POST',
+				   url: "configuration/getServiceOffering",
+				   headers : {
+	                	'Content-Type' : undefined
+	                },
+				   transformRequest : angular.identity,
+				   data: formData
+				 }).then(
+				   function (result) {
+				     var data = result.data;
+				     if(result.data.length==0)
+			    	 {
+			    	 scope.campaignDetails.serviceOffering.serviceName='';
+			    	 }
+				     response(data);
+				   }, function (error) {
+				     var data = error.data;
+				   });
+            },
+            focus:function (event, ui) {
+                element.val(ui.item.serviceName);
+                return false;
+            },
+            select:function (event, ui) {
+                scope.campaignDetails.serviceOffering = ui.item ;
+                scope.$apply;
+                return false;
+            },
+            change:function (event, ui) {
+                if (ui.item === null) {
+                    scope.campaignDetails.serviceOffer = null;
+                	scope.campaignDetails.serviceOffering.serviceName='';
+                }
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        	  return $( "<li>" )
+        	    .data( "ui-autocomplete-item", item )
+        	    .append( "<a>" + item.serviceName + "</a>" )
+        	    .appendTo( ul );
+        	};
+    }
+}]);
+
+
+myapp.directive("ngContactUnique", function(ContactEmailCheckService) {
+	  return {
+	    restrict: 'A',
+	    require: 'ngModel',
+	    link: function (scope, element, attrs, ngModel) {
+	      element.bind('keypress keyup cut blur', function (e) {
+	        if (!ngModel || !element.val()) return;
+	        var keyProperty = scope.$eval(attrs.ngContactUnique);
+	        var currentValue = element.val();
+	        ContactEmailCheckService.checkUniqueValue(keyProperty.key, keyProperty.property, currentValue)
+	          .then(function (unique) {
+
+				var condition = true;
+				if(unique) {
+					condition = false;
+				}else {
+					condition = true;
+				}
+				
+				if(element.val() == ''){
+					ngModel.$setValidity('unique', true); 
+				} else if(element.val() != ''){
+                ngModel.$setValidity('unique', condition); 
+            } else {
+					//No Action
+				}
+				
+				
+
+			});
+
+	        });
+	      }
+	    }
+});
+
+myapp.directive('contactsearchnameserviceautocomplete', ['$http', function($http,$scope) {
+    return function (scope, element, attrs) {
+        element.autocomplete({
+            minLength:1,
+            source:function (request, response) {
+            	var formData = new FormData();
+	            formData.append("serviceOfferingId",request.term);
+			   
+			   $http({
+				   method: 'POST',
+				   url: "configuration/getServiceOffering",
+				   headers : {
+	                	'Content-Type' : undefined
+	                },
+				   transformRequest : angular.identity,
+				   data: formData
+				 }).then(
+				   function (result) {
+				     var data = result.data;
+				     response(data);
+				     if(result.data.length==0)
+			    	 {
+				    	scope.campaignContactSearch.serviceOffering='';
+			    	 }
+				   }, function (error) {
+				     var data = error.data;
+				   });
+            },
+            focus:function (event, ui) {
+                element.val(ui.item.serviceName);
+                return false;
+            },
+            select:function (event, ui) {
+                scope.campaignContactSearch.serviceOffering = ui.item ;
+                scope.$apply;
+                return false;
+            },
+            change:function (event, ui) {
+                if (ui.item === null) {
+                    scope.campaignContactSearch.serviceOffering = null;
+                    scope.campaignContactSearch.serviceOffering='';
+                }
+            }
+        }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+        	  return $( "<li>" )
+        	    .data( "ui-autocomplete-item", item )
+        	    .append( "<a>" + item.serviceName + "</a>" )
+        	    .appendTo( ul );
+        	};
+    }
+}]);
+myapp.directive("ngsearchnameunique", function(CampaignService) {
+	  return {
+	    restrict: 'A',
+	    require: 'ngModel',
+	    link: function (scope, element, attrs, ngModel) {
+	      element.bind('keypress keyup cut blur', function (e) {
+	        if (!ngModel || !element.val()) return;
+	       
+	        var currentValue = element.val();
+	        
+	        CampaignService.checkUniqueContactSearchName(currentValue)
+	          .then(function (unique) {
+	        	 var condition = true;
+				if(unique) {
+					condition = false;
+				}else {
+					condition = true;
+				}
+				
+				if(element.val() == ''){
+					ngModel.$setValidity('unique', true); 
+				} else if(element.val() != ''){
+              ngModel.$setValidity('unique', condition); 
+          } else {
+					//No Action
+				}
+
+			});
+	        });
+	      }
+	    }
+});
+
+myapp.directive('ngaddcampaigndatepicker', function () {
+	
+	var dateToday = new Date();
+    return {
+    	
+    	
+        restrict: 'A',
+        require: 'ngModel',
+         link: function (scope, element, attrs, ngModelCtrl) {
+            element.datepicker({
+            	 minDate: dateToday,
+                dateFormat: 'mm/dd/yy',
+                onSelect: function (campaignRunDate) {
+                    scope.campaignSearch.campaignRunDate = campaignRunDate;
+                    scope.$apply();
+                }
+            });
+        }
+    };
+});
+myapp.directive("ngCompanyNameUnique", function(CompanyUniqueService) {
+	  return {
+	    restrict: 'A',
+	    require: 'ngModel',
+	    link: function (scope, element, attrs, ngModel) {
+	      element.bind('keyup cut copy blur', function (e) {
+	        if (!ngModel || !element.val()) return;
+	        var keyProperty = scope.$eval(attrs.ngCompanyNameUnique);
+	        var companyName = scope.contact.companyDetails.companyName;
+	        var websiteName = scope.contact.companyDetails.website;
+	        CompanyUniqueService.checkUniqueValue(companyName, websiteName)
+	          .then(function (unique) {
+
+				var condition = true;
+				if(unique) {
+					condition = false;
+				}else {
+					condition = true;
+				}
+				
+				if(element.val() == ''){
+					scope.form.contactForm.companyName.$setValidity('unique', true); 
+				} else if(element.val() != ''){
+					scope.form.contactForm.companyName.$setValidity('unique', condition); 
+          } else {
+					//No Action
+				}
+				
+				
+
+			});
+
+	        });
+	      }
+	    }
+});

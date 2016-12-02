@@ -3,53 +3,73 @@ package com.sensiple.contactsrepository.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.mail.Session;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.VelocityEngine;
 import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.google.gson.Gson;
 import com.sensiple.contactsrepository.model.CampaignContactStatus;
 import com.sensiple.contactsrepository.model.ContactStatus;
 import com.sensiple.contactsrepository.model.DaysType;
 import com.sensiple.contactsrepository.model.MailConfig;
-import com.sensiple.contactsrepository.model.Role;
 import com.sensiple.contactsrepository.model.User;
 import com.sensiple.contactsrepository.service.UserDetailsService;
 import com.sensiple.contactsrepository.utils.Constants;
+import com.sensiple.contactsrepository.utils.ContactsSession;
 import com.sensiple.contactsrepository.utils.MailUtil;
 import com.sensiple.contactsrepository.utils.PasswordGenerator;
 
+/**
+ * @author saranya This class is used to invoke manage user functionalities.
+ */
 @RestController
+@SessionAttributes("contactsSession")
 public class UserController {
-
+	/**
+	 * This method is used to get the log.
+	 */
 	private Logger LOGGER = Logger.getLogger(UserController.class);
-
-	@Autowired
+	/**
+	 * This method is used to get user details.
+	 */
+	@Inject
 	private UserDetailsService userDetails;
-	
-	@Autowired
+	/**
+	 * This method is used to get mail sender details.
+	 */
+	@Inject
 	private JavaMailSenderImpl javaMailSenderImpl;
-
-	@Autowired
+	/**
+	 * This method is used to get load the mail template.
+	 */
+	@Inject
 	private VelocityEngine velocityEngine;
 
+	/**
+	 * It will validate mail, and will send mail on success.
+	 * 
+	 * @param emailAddress
+	 * @return success or failure status.
+	 */
 	@RequestMapping(value = "/forgotPassword", method = RequestMethod.POST)
 	@ResponseBody
 	public String forgetPassWord(@RequestBody String emailAddress) {
-		
+
 		int result = 0;
 		Gson gson = new Gson();
 		String jsonResult = Constants.ERROR;
@@ -95,7 +115,7 @@ public class UserController {
 
 						int response = userDetails.updatePassword(
 								encrypedPassword, emailAddress);
-						
+
 						if (response > 0) {
 							status = Constants.SUCCESS;
 						}
@@ -109,14 +129,22 @@ public class UserController {
 			}
 			jsonResult = gson.toJson(status);
 		} catch (Exception e) {
-			LOGGER.error("Exception occured in forgotPassword Service in User Controller"
+			LOGGER.error("Exception occured in forgotPassword method : "
 					+ ExceptionUtils.getStackTrace(e));
 		}
 		return jsonResult;
 	}
 
+	/**
+	 * It will send mail for successful user addition and will generate
+	 * temporary password.
+	 * 
+	 * @param user
+	 * @return 0's and 1's.
+	 */
 	@RequestMapping(value = "/users/addUser", method = RequestMethod.POST)
-	public int addUser(@RequestBody User user) {
+	public int addUser(@RequestBody User user,
+			@ModelAttribute("contactsSession") ContactsSession contactsSession) {
 
 		int response = 0;
 		Session session = null;
@@ -126,65 +154,71 @@ public class UserController {
 
 		try {
 
-			long userId = user.getId();
-			if (userId <= 0) {
-				randamPassword = PasswordGenerator.geRandomtPassword();
-				encrptedPassword = new BCryptPasswordEncoder()
-						.encode(randamPassword);
-				user.setPassword(encrptedPassword);
-			}
+			if (contactsSession != null && contactsSession.getUser() != null) {
 
-			response = userDetails.addUser(user);
-			if (response == 1 && userId <= 0) {
-				String[] toAddress = { user.getEmail() };
+				User author = contactsSession.getUser();
+				user.setLoggedBy(author.getId());
 
-				MailUtil mailUtil = new MailUtil();
-				MailConfig mailConfig = new MailConfig();
+				long userId = user.getId();
 
-				session = javaMailSenderImpl.getSession();
-				String senderAddress = session.getProperty(Constants.USERNAME);
+				if (userId <= 0) {
+					randamPassword = PasswordGenerator.geRandomtPassword();
+					encrptedPassword = new BCryptPasswordEncoder()
+							.encode(randamPassword);
+					user.setPassword(encrptedPassword);
+				}
 
-				mailConfig.setFromAddress(senderAddress);
-				mailConfig.setToAddress(toAddress);
-				mailConfig.setSubject(Constants.ADD_USER_EMAIL_SUBJECT);
-				mailConfig
-						.setBodyTemplate(Constants.ADD_USER_EMAIL_CONTENT_TEMPLATE);
+				response = userDetails.addUser(user);
+				if (response == 1 && userId <= 0) {
+					String[] toAddress = { user.getEmail() };
 
-				bodyContent[0] = randamPassword == null ? "" : randamPassword;
+					MailUtil mailUtil = new MailUtil();
+					MailConfig mailConfig = new MailConfig();
 
-				mailConfig.setBodyContent(bodyContent);
+					session = javaMailSenderImpl.getSession();
+					String senderAddress = session
+							.getProperty(Constants.USERNAME);
 
-				mailUtil.sendMail(velocityEngine, javaMailSenderImpl,
-						mailConfig);
+					mailConfig.setFromAddress(senderAddress);
+					mailConfig.setToAddress(toAddress);
+					mailConfig.setSubject(Constants.ADD_USER_EMAIL_SUBJECT);
+					mailConfig
+							.setBodyTemplate(Constants.ADD_USER_EMAIL_CONTENT_TEMPLATE);
 
+					bodyContent[0] = randamPassword == null ? ""
+							: randamPassword;
+
+					mailConfig.setBodyContent(bodyContent);
+
+					mailUtil.sendMail(velocityEngine, javaMailSenderImpl,
+							mailConfig);
+
+				}
 			}
 		} catch (Exception e) {
 
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in addUser method : "
+					+ ExceptionUtils.getStackTrace(e));
 
 		}
 
 		return response;
 	}
 
-	@RequestMapping(value = "/users/getRole", method = RequestMethod.GET)
-	public List<Role> getRole() {
+	
 
-		List<Role> roleList = new ArrayList<Role>();
-
-		try {
-
-			roleList = userDetails.getRole();
-
-		} catch (Exception e) {
-
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
-
-		}
-
-		return roleList;
-	}
-
+	/**
+	 * This method is used to get the list of user details.
+	 * 
+	 * @param startRecord
+	 * @param recordToShow
+	 * @param firstName
+	 * @param lastName
+	 * @param emailAddress
+	 * @param roleName
+	 * @param phoneNumber
+	 * @return list of user.
+	 */
 	@RequestMapping(value = "/users/getUsers", method = RequestMethod.GET)
 	public @ResponseBody String getUsersList(
 			@RequestParam(value = "startRecord") int startRecord,
@@ -208,12 +242,20 @@ public class UserController {
 			userObject.put("userList", usersList);
 
 		} catch (Exception e) {
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in getUsersList method : "
+					+ ExceptionUtils.getStackTrace(e));
 		}
 
 		return new Gson().toJson(userObject);
 	}
 
+	/**
+	 * This will help the user to validate and change the password. It will
+	 * validate the old password entered, new password and confirm password.
+	 * 
+	 * @param passwordRequest
+	 * @return success or failure details.
+	 */
 	@RequestMapping(value = "/users/changePassword", method = RequestMethod.POST)
 	public String changePassword(@RequestBody String passwordRequest) {
 
@@ -264,12 +306,19 @@ public class UserController {
 			}
 			jsonResult = gson.toJson(result);
 		} catch (Exception e) {
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in changePassword method : "
+					+ ExceptionUtils.getStackTrace(e));
 		}
 
 		return jsonResult;
 	}
 
+	/**
+	 * This method is used to check whether entered mail is already available.
+	 * 
+	 * @param emailAddress
+	 * @return true or false.
+	 */
 	@RequestMapping(value = "/users/isEmailExist", method = RequestMethod.POST)
 	public @ResponseBody boolean isEmailExist(@RequestBody String emailAddress) {
 
@@ -284,13 +333,20 @@ public class UserController {
 
 		} catch (Exception e) {
 
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in isEmailExist method : "
+					+ ExceptionUtils.getStackTrace(e));
 
 		}
 
 		return isExist;
 	}
 
+	/**
+	 * This method is used to delete the user.
+	 * 
+	 * @param user
+	 * @return true or false.
+	 */
 	@RequestMapping(value = "users/deleteuser", method = RequestMethod.POST)
 	@ResponseBody
 	public boolean deleteUser(@RequestBody User user) {
@@ -303,64 +359,46 @@ public class UserController {
 
 		} catch (Exception e) {
 
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in deleteUser method : "
+					+ ExceptionUtils.getStackTrace(e));
 
 		}
 
 		return isDeleted;
 	}
 
-	@RequestMapping(value = "/users/searchfname", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String searchUser(@RequestParam("firstName") String firstName,
-			@RequestParam("lastName") String lastName,
-			@RequestParam("Email") String email,
-			@RequestParam("Phone") String phone,
-			@RequestParam("Role") String role) {
-
-		User user = new User();
-		List<User> users = null;
-		Role role1 = new Role();
-
-		user.setFirstName(firstName);
-		user.setLastName(lastName);
-		user.setEmail(email);
-		user.setPhoneNumber(phone);
-
-		role1.setRoleName(role);
-		user.setRole(role1);
-
-		try {
-			users = userDetails.searchByFirstName(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		String json = new Gson().toJson(users);
-
-		return json;
-	}
-
+	/**
+	 * This method is used to get status of the user.
+	 * 
+	 * @return list of campaign status.
+	 */
 	@RequestMapping(value = "/users/getstatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String getStatus() {
+	public net.sf.json.JSONObject getStatus() {
 
 		List<ContactStatus> contactStatusList = new ArrayList<ContactStatus>();
 		List<CampaignContactStatus> campaignContactStatusList = null;
+		net.sf.json.JSONObject jsonObject = new net.sf.json.JSONObject();
 		try {
 			contactStatusList = userDetails.getStatus();
-			for (ContactStatus contactStatus : contactStatusList) {
 				campaignContactStatusList = userDetails
-						.getCompaignContactStatusList(contactStatus.getId());
-				contactStatus
-						.setCampaignContactStatus(campaignContactStatusList);
-			}
+						.getCompaignContactStatusList();
+				
+				jsonObject.put("contactStatusList", contactStatusList);
+				jsonObject.put("campaignContactStatusList", campaignContactStatusList);
 		} catch (Exception e) {
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in getStatus method : "
+					+ ExceptionUtils.getStackTrace(e));
 		}
 
-		String json = new Gson().toJson(contactStatusList);
 
-		return json;
+		return jsonObject;
 	}
 
+	/**
+	 * This method is used to display the days assigned for campaign.
+	 * 
+	 * @return list of days.
+	 */
 	@RequestMapping(value = "/users/getdaystype", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getDays() {
 
@@ -368,7 +406,8 @@ public class UserController {
 		try {
 			list = userDetails.getDays();
 		} catch (Exception e) {
-			LOGGER.error(ExceptionUtils.getStackTrace(e));
+			LOGGER.error("Exception occured in getdaystype method : "
+					+ ExceptionUtils.getStackTrace(e));
 
 		}
 		String json = new Gson().toJson(list);

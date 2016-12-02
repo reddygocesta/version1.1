@@ -14,8 +14,6 @@ public interface UserDetailsService {
 
 	int forgotPassword(final String emailAddress) throws Exception;
 
-	List<Role> getRole() throws Exception;
-
 	Role role(int roleid) throws Exception;
 
 	List<User> getUsersList(int startRecord, int recordToShow,
@@ -31,8 +29,6 @@ public interface UserDetailsService {
 	boolean getPasswordList(final long userId, final String newPassword)
 			throws Exception;
 
-	List<User> searchByFirstName(User user) throws Exception;
-
 	boolean isEmailExist(String emailAddress) throws Exception;
 
 	boolean deleteUser(User user) throws Exception;
@@ -41,7 +37,7 @@ public interface UserDetailsService {
 
 	List<DaysType> getDays() throws Exception;
 
-	List<CampaignContactStatus> getCompaignContactStatusList(int id)
+	List<CampaignContactStatus> getCompaignContactStatusList()
 			throws Exception;
 
 	int updatePassword(String password, String emailAddress) throws Exception;

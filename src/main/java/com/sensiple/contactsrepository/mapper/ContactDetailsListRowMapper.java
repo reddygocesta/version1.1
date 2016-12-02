@@ -14,7 +14,6 @@ import com.sensiple.contactsrepository.model.CountryDetails;
 import com.sensiple.contactsrepository.model.StateDetails;
 
 public class ContactDetailsListRowMapper implements RowMapper<ContactDetails>{
-
 	public ContactDetails mapRow(ResultSet rs, int rowNo) throws SQLException {
 
 		ContactDetails contact = new ContactDetails();
@@ -51,7 +50,7 @@ public class ContactDetailsListRowMapper implements RowMapper<ContactDetails>{
 		company.setAddressDetails(addressDetails);
 		company.setIndustry(rs.getString("industry_name"));
 		
-		contact.setCompanyId(company);
+		contact.setCompanyDetails(company);
 		
 		contact.setTotalRecords(rs.getInt("total_records"));
 		

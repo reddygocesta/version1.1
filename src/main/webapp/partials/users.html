@@ -15,14 +15,11 @@
     <h2 class="page-title"><i class="fa fa-users" aria-hidden="true"></i> Manage Users</h2>
    
 		<div class="adduser-page">
-		
-			<!-- TO SHOW SUCCESS MESSAGE -->
-			<div data-ng-controller="FormSubmitController">
-			
+			<div>
 				<div class="alert alert-success" data-ng-show="messages">
 				<button type="button" class="close" data-ng-click="switchMessage('messages')">x</button>{{messages}}
 				</div>
-			<div class="panel panel-default contact-panel">
+			<div class="panel panel-default">
 				<div class="panel-body">
 					<div class="user-table">
 							<div class="panel panel-default">
@@ -65,9 +62,8 @@
 													<div class="form-group">
 														<label class="col-md-4 control-label" for="">Role</label>
 														<div class="col-md-8" data-ng-init="fillRoleList()">
-														  <!-- <input type="text" class="form-control" id="" placeholder="Role" data-ng-model="searchUser.user.role.roleName" > -->
 														  <select name="role" class="form-control"
-															data-ng-model="searchUser.role" data-ng-options="role.roleName for role in roleList" >
+															data-ng-model="searchUser.role" data-ng-options="roles.roleName for roles in roleList" >
 															<option value="" label="Select Role">Select Role</option>
 														</select>
 														</div>
@@ -88,8 +84,14 @@
 							<div class="add_user pull-right">
 								<button type=button class="btn btn-success" data-ng-click="showForm()">Add User</button>
 							</div>
+							<div class="clear"></div>
 
-  		<div >		
+  		<div>	
+  		<span class="panel-title-campaign">Total Number of Users: <span class="badge">{{total}}</span></span>	
+  		<div class="pull-right">
+							<pagination total-items="total" ng-model="pagination.currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
+					</div>
+					<div class="clear"></div>
   		<table  class="table table-bordered table-striped" >
 							<thead>
 								<tr>
@@ -121,8 +123,9 @@
 							</tbody>
 						</table>
 						<div class="pull-right">
-							<pagination total-items="total" ng-model="currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
+							<pagination total-items="total" ng-model="pagination.currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
 					</div>
+					<div class="clear"></div>
 					</div>
 					</div>
 				</div>

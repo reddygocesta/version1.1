@@ -1,7 +1,7 @@
 'use strict';
 
 var myapp = angular
-    .module('myApp', ['ngCookies','ngMaterial','ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'angular-spinkit', 'ui.bootstrap']);
+    .module('myApp', ['ngCookies','ngMaterial','ngResource', 'ngRoute', 'swaggerUi', 'http-auth-interceptor', 'ngAnimate', 'angular-spinkit', 'ui.bootstrap','angularjs-dropdown-multiselect']);
 
 
 myapp.constant('USER_ROLES', {
@@ -67,7 +67,14 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         }
     }).when('/campaigns', {
         templateUrl: 'partials/campaigns.html',
-        controller: 'CampaignsController',
+        controller: 'CampaignController',
+        access: {
+            loginRequired: true,
+            authorizedRoles: [USER_ROLES.all]
+        }
+    }).when('/addCampaign', {
+        templateUrl: 'partials/addCampaign.html',
+        controller: 'CampaignController',
         access: {
             loginRequired: true,
             authorizedRoles: [USER_ROLES.all]
@@ -89,6 +96,13 @@ myapp.config(function ($routeProvider, USER_ROLES) {
     }).when('/login', {
         templateUrl: 'partials/login.html',
         controller: 'LoginController',
+        access: {
+            loginRequired: false,
+            authorizedRoles: [USER_ROLES.all]
+        }
+    }).when('/editContacts', {
+        templateUrl: 'partials/editContacts.html',
+        controller: 'ContactsController',
         access: {
             loginRequired: false,
             authorizedRoles: [USER_ROLES.all]
@@ -127,13 +141,6 @@ myapp.config(function ($routeProvider, USER_ROLES) {
             loginRequired: false,
             authorizedRoles: [USER_ROLES.all]
         }
-    }).when("/adduser", {
-        templateUrl: "partials/addUser.html",
-        controller: "FormSubmitController",
-        access: {
-            loginRequired: false,
-            authorizedRoles: [USER_ROLES.all]
-        }  
     }).when("/upload", {
         templateUrl: "partials/contactUpload.html",
         controller: "uploadController",
@@ -152,6 +159,13 @@ myapp.config(function ($routeProvider, USER_ROLES) {
         redirectTo: '/error/404',
         access: {
             loginRequired: false,
+            authorizedRoles: [USER_ROLES.all]
+        }
+    }).when('/addContact', {
+        templateUrl: 'partials/addContacts.html',
+        controller: 'ContactsController',
+        access: {
+            loginRequired: true,
             authorizedRoles: [USER_ROLES.all]
         }
     });
@@ -186,7 +200,7 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
         var nextLocation = '';
         if(data.isActiveTempPassword == 1){
         	$rootScope.temporaryPassword = true; 
-        	nextLocation = ($rootScope.requestedUrl ? $rootScope.requestedUrl : "/changePassword");
+        	nextLocation = "/changePassword";
         }else{
         	$rootScope.temporaryPassword = false; 
         	nextLocation = ($rootScope.requestedUrl ? $rootScope.requestedUrl : "/home");
@@ -248,6 +262,15 @@ myapp.run(function ($rootScope, $location, $http, AuthSharedService, Session, US
 
     // Get already authenticated user account
     AuthSharedService.getAccount();
+    
+    $rootScope.myClass = [];
+    $rootScope.checkClass = function() {
+      if($rootScope.myClass.indexOf('toggled-2') == -1) {
+    	  $rootScope.myClass.push('toggled-2');
+      } else {
+    	  $rootScope.myClass.pop('toggled-2');
+      }
+    }
 
 
 });

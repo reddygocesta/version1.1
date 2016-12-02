@@ -13,11 +13,10 @@
 		<li>Manage Campaign</li>
 	</ul>
     <h2 class="page-title"><i class="fa fa-calendar" aria-hidden="true"></i> Manage Campaign</h2>
-    <!-- <span class="page-content">Welcome to Contacts Repository !</span> -->
 		<div class="manage-campaign">
 			<div class="row">
 				<div class="col-md-12">
-					<div class="panel panel-default campaign-panel">
+					<div class="panel panel-default">
 						<div class="panel-body">
 							<div class="configuration">
 								<div class="panel panel-default">
@@ -55,7 +54,7 @@
 														<div class="col-md-6" data-ng-init="fillCampaignType()">
 															<select name="campaignType" class="form-control" 
 															data-ng-model="campaignSearch.campaignType" data-ng-options="campaignType.campaignTypeName for campaignType in campaignTypeList"  >
-															<option value="" label="Select">Select</option>
+															
 															</select>
 														</div>
 													</div>
@@ -113,84 +112,37 @@
 									<button class="btn btn-warning" data-ng-click="reset()">Reset</button>									
 								</div>
 								
-								<!-- <div class="alert alert-success">
-									<span>The number of Campaigns for this Search are <strong>xyz.</strong> Click Here to View <a href="#">List of Campaign</a>.</span>
-								</div> -->
-								
 								<div class="pull-right">
-									<a href="#"><button class="btn btn-success" data-ng-hide="isManager">Add Campaign</button></a>			
+									<a href="#/addCampaign"><button class="btn btn-success" data-ng-hide="isManager">Add Campaign</button></a>			
 								</div>
 								<div class="clear"></div>
 								
-								<h4>Campaign List</h4>
+								<h4 class="panel-title-campaign">Campaign List</h4>
+								<span class="panel-title-campaign">Total Number of Campaigns: <span class="badge">{{total}}</span></span>
+								<div class="pull-right">
+									<pagination total-items="total" ng-model="currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
+								</div>
+								<div class="clear"></div>
 								<div class="table-responsive campaign-list-table">
 								<table class="table table-bordered table-striped">
 									<thead>
 										<tr>
-											<th>S.No</th>
-											<th>Campaign Name</th>
-											<th>Campaign Type</th>
-											<th>Campaign Status</th>
-											<th>Campaign Owner Name</th>
-											<th>Campaign Planned Run Date</th>
-											<th>Campaign Actual Run Date</th>
-											<th>Campaign Number</th>
+											<th>Name</th>
+											<th>Type</th>
+											<th>Status</th>
+											<th>Owner Name</th>
+											<th>Planned Run Date</th>
+											<th>Actual Run Date</th>
+											<th>Number</th>
 											<th>Actions</th>
 										</tr>
 									</thead>
-									<!-- <tbody>
-										<tr>
-											<td scope=row>1</td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td>
-												<a href="#"><button type=button class="btn btn-primary btn-xs" title="View"><i class="fa fa-eye" aria-hidden="true"></i></button></a> 
-												<button type=button class="btn btn-info btn-xs" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></button> 
-												<button type=button class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-times" aria-hidden="true"></i> </button>
-											</td>
-										</tr>
-										<tr>
-											<td scope=row>2</td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td>
-												<a href="#"><button type=button class="btn btn-primary btn-xs" title="View"><i class="fa fa-eye" aria-hidden="true"></i></button></a> 
-												<button type=button class="btn btn-info btn-xs" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></button> 
-												<button type=button class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-times" aria-hidden="true"></i> </button>
-											</td>
-										</tr>
-										<tr>
-											<td scope=row>3</td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td></td>
-											<td>
-												<a href="#"><button type=button class="btn btn-primary btn-xs" title="View"><i class="fa fa-eye" aria-hidden="true"></i></button></a> 
-												<button type=button class="btn btn-info btn-xs" title="Edit"><i class="fa fa-pencil" aria-hidden="true"></i></button> 
-												<button type=button class="btn btn-danger btn-xs" title="Delete"><i class="fa fa-times" aria-hidden="true"></i> </button>
-											</td>
-										</tr>
-									</tbody> -->
+									
 									<tbody>
 								<tr data-ng-show="campaignList.length == 0">
-									<td class="text-center" colspan="9">No records Found</td>
+									<td class="text-center" colspan="8">No records Found</td>
 								</tr>
 								<tr data-ng-repeat="campaign in campaignList" >
-									<td >{{campaign.serialNumber}}</td>
 									<td >{{campaign.campaignName}}</td>
 									<td >{{campaign.campaignType.campaignTypeName}}</td>
 									<td >{{campaign.campaignStatus.statusName}}</td>
@@ -210,23 +162,7 @@
 								<div class="pull-right">
 									<pagination total-items="total" ng-model="currentPage" ng-change="pageChanged()" items-per-page="10" max-size="5"  rotate="true"></pagination>
 								</div>
-								<!-- <div class="col-sm-offset-11">
-									<ul class="pagination pagination-sm">
-										<li class="disabled">
-											<span>
-												<span aria-hidden="true">&laquo;</span>
-											 </span>
-										</li>
-										<li class="active">
-										  <span>1 <span class="sr-only">(current)</span></span>
-										</li>
-										<li class="disabled">
-											<span>
-												<span aria-hidden="true">&raquo;</span>
-											</span>
-										</li>
-									</ul>
-								</div> -->
+								<div class="clear"></div>
 							</div>
 						</div>
 					</div>

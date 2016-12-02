@@ -1,5 +1,6 @@
 package com.sensiple.contactsrepository.dao.impl;
 
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,17 +8,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
 import com.sensiple.contactsrepository.dao.ContactUploadDAO;
+import com.sensiple.contactsrepository.mapper.AddressDetailsRowMapper;
+import com.sensiple.contactsrepository.mapper.CompanyDetailsRowMapper;
 import com.sensiple.contactsrepository.mapper.ContactDetailsListRowMapper;
 import com.sensiple.contactsrepository.mapper.ContactDetailsRowMapper;
+import com.sensiple.contactsrepository.model.AddressDetails;
+import com.sensiple.contactsrepository.model.CompanyDetails;
 import com.sensiple.contactsrepository.model.ContactDetails;
 import com.sensiple.contactsrepository.model.ContactTemp;
+import com.sensiple.contactsrepository.utils.ProcedureConstant;
+import com.sensiple.contactsrepository.utils.SqlConstant;
 import com.sensiple.contactsrepository.web.controller.ContactController;
 
 import net.sf.json.JSONObject;
@@ -35,7 +45,7 @@ public class ContactUploadDAOImp implements ContactUploadDAO {
  * @param contactList
  * @return
  */
-public JSONObject InsertNewContact(final List<ContactTemp> contactList) {
+public JSONObject insertNewContact(final List<ContactTemp> contactList) {
 	
 	
 	String contactStatus="";
@@ -76,49 +86,49 @@ public JSONObject InsertNewContact(final List<ContactTemp> contactList) {
 	 
         
         Map<String, Object> in= new HashMap<String, Object>();
-		in.put("ContactEmailID",contact.getContactEmailID() );
-		in.put("firstName",contact.getFirstName() );
-		in.put("middleName",contact.getMiddleName() );
-		in.put("lastName", contact.getLastName());
-		in.put("jobTitle", contact.getJobTitle());
-		in.put("jobFunction", contact.getJobFunction());
-		in.put("contactSource",contact.getContactSource() );
-		in.put("phoneNumber",contact.getPhoneNumber() );
-		in.put("extension",contact.getExtension() );
-		in.put("mobile",contact.getMobile());
-		in.put("companyName",contact.getCompanyName() );
-		in.put("companyWebSite",contact.getWebSite());
-		in.put("revenue",contact.getRevenue() );
-		in.put("companySize", contact.getCompanySize());
-		in.put("industry",contact.getIndustry() );
-		in.put("sicCode",contact.getSicCode() );
-		in.put("companyEmailId",contact.getCompanyEmailId());
-		in.put("adressLine1",contact.getAdressLine1() );
-		in.put("addressLine2",contact.getAddressLine2() );
-		in.put("Suite_no",contact.getSuite() );
-		in.put("country",contact.getCountry());
-		in.put("state",contact.getState() );
-		in.put("City_id", contact.getCity());
-		in.put("ZipCode_id",contact.getZipCode());
-		in.put("headQuarters",contact.getHeadQuarters());
-		in.put("createdBy","temp_user");
-		in.put("contactListName",contact.getContactListName());
+		in.put(ProcedureConstant.CONTACT_EMAILID,contact.getContactEmailID() );
+		in.put(ProcedureConstant.CONTACT_FIRSTNAME,contact.getFirstName() );
+		in.put(ProcedureConstant.CONTACT_MIDDLENAME,contact.getMiddleName() );
+		in.put(ProcedureConstant.CONTACT_LASTNAME, contact.getLastName());
+		in.put(ProcedureConstant.CONTACT_JOBTITTLE, contact.getJobTitle());
+		in.put(ProcedureConstant.CONTACT_JOBFUNTION, contact.getJobFunction());
+		in.put(ProcedureConstant.CONTACT_SOURCE,contact.getContactSource() );
+		in.put(ProcedureConstant.CONTACT_PHONENUMBER,contact.getPhoneNumber() );
+		in.put(ProcedureConstant.CONTACT_EXTENSION,contact.getExtension() );
+		in.put(ProcedureConstant.CONTACT_MOBILE,contact.getMobile());
+		in.put(ProcedureConstant.CONTACT_COMPANYNAME,contact.getCompanyName() );
+		in.put(ProcedureConstant.CONTACT_COMAPANYWEBSITE,contact.getWebSite());
+		in.put(ProcedureConstant.CONTACT_REVENUE,contact.getRevenue() );
+		in.put(ProcedureConstant.CONTACT_COMAPNYSIZE, contact.getCompanySize());
+		in.put(ProcedureConstant.CONTACT_INDUSTRY,contact.getIndustry() );
+		in.put(ProcedureConstant.CONTACT_SICCODE,contact.getSicCode() );
+		in.put(ProcedureConstant.CONTACT_COMAPANYEMAILID,contact.getCompanyEmailId());
+		in.put(ProcedureConstant.CONTACT_ADDRESS1,contact.getAdressLine1() );
+		in.put(ProcedureConstant.CONTACT_ADDRESS2,contact.getAddressLine2() );
+		in.put(ProcedureConstant.CONTACT_SUITE,contact.getSuite() );
+		in.put(ProcedureConstant.CONTACT_COUNTRY,contact.getCountry());
+		in.put(ProcedureConstant.CONTACT_STATE,contact.getState() );
+		in.put(ProcedureConstant.CONTACT_CITYID, contact.getCity());
+		in.put(ProcedureConstant.CONTACT_ZIPCODE,contact.getZipCode());
+		in.put(ProcedureConstant.CONTACT_HEADQUARTERS,contact.getHeadQuarters());
+		in.put(ProcedureConstant.CONTACT_CREATEDBY,contact.getCreatedBy());
+		in.put(ProcedureConstant.CONTACT_CONTACTLISTNAME,contact.getContactListName());
 		   
-	    simpleCall=new SimpleJdbcCall(jdbcTemplate).withProcedureName("UPLOAD_CONTACT_DETAILS");
+	    simpleCall=new SimpleJdbcCall(jdbcTemplate).withProcedureName(ProcedureConstant.UPLOAD_CONTACT_DETAILS);
 	    Map<String,Object> out=simpleCall.execute(in);
 	    //get status of uploaded contact new or existing 
-	    contactStatus= (String)out.get("out_status");
-		if(contactStatus.equalsIgnoreCase("new"))
+	    contactStatus= (String)out.get(ProcedureConstant.CONTACT_UPLOADOUT);
+		if(contactStatus.equalsIgnoreCase(ProcedureConstant.CONTACT_UPLOADSTATUS))
 			newContact=newContact+1;
 		else
 			exisitingContact=exisitingContact+1;
 		
 		 }
-	
     }
+	   //set the counts , no of contact newly inserted and exist contact updated
 	   JSONObject userObject = new JSONObject();	   
-	   userObject.put("successCount", newContact);
-	   userObject.put("updateCount", exisitingContact);
+	   userObject.put(ProcedureConstant.CONTACT_NEW, newContact);
+	   userObject.put(ProcedureConstant.CONTACT_UPDATE, exisitingContact);
 	     
 	
 	return userObject;
@@ -131,7 +141,7 @@ public JSONObject InsertNewContact(final List<ContactTemp> contactList) {
  */
  @Override
 	public boolean isContactListNameExist(String contactListName) throws Exception {
-		String sql = "SELECT COUNT(contact_id) FROM contacts_details WHERE  contact_list_name = ? ";
+		String sql = ProcedureConstant.CONTACT_LIST_NAME;
 		boolean response = false;
 		int result = jdbcTemplate.queryForObject(sql, new Object[] { contactListName }, Integer.class);
 		if(result > 0) {
@@ -139,7 +149,6 @@ public JSONObject InsertNewContact(final List<ContactTemp> contactList) {
 		} 
 		return response;
 	}
- 
 	@Override
 	public List<ContactDetails> getContactList(int startRecord, int recordToShow, String contactListName, String contactStatus, 
 			String countryName, String stateName, String jobFunction,String revenue,String industry,String sicCode,
@@ -162,31 +171,199 @@ public JSONObject InsertNewContact(final List<ContactTemp> contactList) {
 			
 		}
 		 
+			
+		
+		LOGGER.info("--------------getUsersList  dao method invoked--------------");
 		List<ContactDetails> contact = new ArrayList<ContactDetails>();
 		try {
-			contact = jdbcTemplate.query("call GET_CONTACT_DETAILS(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", new ContactDetailsListRowMapper(),
+
+			contact = jdbcTemplate.query(SqlConstant.SQL_GET_CONTACT_DETAILS, new ContactDetailsListRowMapper(),
 					startRecord, recordToShow, contactListName,campaignName, contactStatus, countryName, stateName, jobFunction,revenue,industry,sicCode,
 					companySize,contactServiceOffering,companyEmailId,zipcode,companyName,contactSource,website,contactEmailId,
 					firstName,lastName,phoneNumber,mobile,jobTitle,contactAddedBy,
 					createdDate,updatedDate);
 
 		} catch (Exception e) {
-			
+			LOGGER.error("Exception in getContactsList method " + ExceptionUtils.getStackTrace(e));
 		}
+		
 		return contact;
 	}
 
 	@Override
 	public ContactDetails getContactDetails(int contactId) {
-		
+		LOGGER.info("--------------getContactDetails  dao method invoked--------------");
 		List<ContactDetails> contactDetails=new ArrayList<ContactDetails>();
 		try{
 			
-			contactDetails = jdbcTemplate.query("call View_CONTACT_DETAILS(?)",new ContactDetailsRowMapper(),contactId);
+			contactDetails = jdbcTemplate.query(SqlConstant.SQL_VIEW_CONTACT_DETAILS,new ContactDetailsRowMapper(),contactId);
 			
 		}catch(Exception e){
+			LOGGER.error("Exception in getContactDetails method " + ExceptionUtils.getStackTrace(e));
 		}
+		
 		return contactDetails.get(0);
 	}
+	
+	
+	/**
+	 * This method is used to get the company Name
+	 * @param companyName
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public List<CompanyDetails> getCompanyDetails(String companyName) throws Exception {
+		
+		LOGGER.info("Initiatite the getCompanyNames Details DAO Method");
+		
+		List<CompanyDetails> companyDetails = new ArrayList<CompanyDetails>();
+		try{
+			
+			companyDetails = jdbcTemplate.query(SqlConstant.GET_COMPANY_DETAILS, new CompanyDetailsRowMapper(), companyName);
+			
+		}catch(Exception e){
+			LOGGER.error("Exception in getCompany method "+ExceptionUtils.getStackTrace(e));
+		}
+		return companyDetails;
+	}
+	
+	
+	/**
+	 * This method is used to get the Address Details.
+	 * @param companyName
+	 * @return list of address
+	 * @throws Exception
+	 */
+	@Override
+	public List<AddressDetails> getLocationDetails(String companyId) throws Exception {
+		LOGGER.info("Initiatite the getLocation Details DAO Method");
+		List<AddressDetails> addressDetails = new ArrayList<AddressDetails>();
+		try{
+			
+			addressDetails = jdbcTemplate.query(SqlConstant.GET_ADDRESS_DETAILS, new AddressDetailsRowMapper(), companyId);
+			
+		}catch(Exception e){
+			LOGGER.error("Exception in getLocation method "+ExceptionUtils.getStackTrace(e));
+		}
+		return addressDetails;
+	}
+	
+	/**
+	 * This method is used to delete the Contact.
+	 * @param contactDetails
+	 * @return true or false
+	 * @throws Exception
+	 */
+	@Override
+	public boolean deleteContact(String contactsId) throws Exception {
+		
+		LOGGER.info("Initiatite the deleteContact Details DAO Method");
+		
+		boolean isDeleted = false;
+		final MapSqlParameterSource params = new MapSqlParameterSource();
+		int response = 0;
+		try{
+			
+			params.addValue(ProcedureConstant.CONTACT_IDS, contactsId);
+			
+			
+	
+			final SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName(ProcedureConstant.DELETE_CONTACT);
+			simpleJdbcCall.declareParameters(new SqlParameter(
+					ProcedureConstant.CONTACT_IDS, Types.VARCHAR));
+			
+			final java.util.Map<String, Object> result = simpleJdbcCall.execute(params);
+			response = Integer.parseInt(String.valueOf(result.get(ProcedureConstant.RESULT)));
+			LOGGER.debug("response after insert"+response);
+			
+			if (response > 0) {
+				isDeleted = true;
+			}
+			
+		}catch(Exception e){
+			LOGGER.error("Exception in deleteContact method "+ExceptionUtils.getStackTrace(e));
+		}
+		return isDeleted;
+	}
+	
+	@Override
+	public int addContactDetails(ContactDetails contactDetails) throws Exception {
+		
+		final MapSqlParameterSource params = new MapSqlParameterSource();
+		int response = 0;
+		
+		params.addValue(ProcedureConstant.CONTACT_EMAILID, contactDetails.getContactEmailId());
+		params.addValue(ProcedureConstant.CONTACT_FIRSTNAME, contactDetails.getFirstName());
+		params.addValue(ProcedureConstant.CONTACT_MIDDLENAME, contactDetails.getMiddleName());
+		params.addValue(ProcedureConstant.CONTACT_LASTNAME, contactDetails.getLastName());
+		params.addValue(ProcedureConstant.CONTACT_JOBTITTLE, contactDetails.getJobTitleObj().getJobTitleId());
+		params.addValue(ProcedureConstant.CONTACT_JOBFUNTION, contactDetails.getJobFunctionObj().getJobFunctionId());
+		params.addValue(ProcedureConstant.CONTACT_SOURCE, contactDetails.getContactSource());
+		params.addValue(ProcedureConstant.CONTACT_PHONENUMBER, contactDetails.getPhoneNumber());
+		params.addValue(ProcedureConstant.CONTACT_EXTENSION,contactDetails.getExtension() );
+		params.addValue(ProcedureConstant.CONTACT_MOBILE,contactDetails.getMobile());
+		params.addValue(ProcedureConstant.COMPANY_ID,contactDetails.getCompanyDetails().getCompanyId());
+		params.addValue(ProcedureConstant.CONTACT_COMPANYNAME,contactDetails.getCompanyDetails().getCompanyName() );
+		params.addValue(ProcedureConstant.CONTACT_COMAPANYWEBSITE,contactDetails.getCompanyDetails().getWebsite());
+		params.addValue(ProcedureConstant.CONTACT_REVENUE,contactDetails.getCompanyDetails().getRevenueDetails().getRevenueId() );
+		params.addValue(ProcedureConstant.CONTACT_COMAPNYSIZE, contactDetails.getCompanyDetails().getCompanySizeDetails().getSizeId());
+		params.addValue(ProcedureConstant.CONTACT_INDUSTRY,contactDetails.getCompanyDetails().getIndustryDetails().getIndustryId() );
+		params.addValue(ProcedureConstant.CONTACT_SICCODE,contactDetails.getCompanyDetails().getSicCodeDetails().getSicCodeId() );
+		params.addValue(ProcedureConstant.CONTACT_COMAPANYEMAILID,contactDetails.getCompanyDetails().getCompanyEmailId());
+		params.addValue(ProcedureConstant.ADDRESS_ID,contactDetails.getCompanyDetails().getAddressDetail().getAddressId());
+		params.addValue(ProcedureConstant.CONTACT_ADDRESS1,contactDetails.getCompanyDetails().getAddressDetail().getAddressLine1() );
+		params.addValue(ProcedureConstant.CONTACT_ADDRESS2,contactDetails.getCompanyDetails().getAddressDetail().getAddressLine2() );
+		params.addValue(ProcedureConstant.CONTACT_SUITE,contactDetails.getCompanyDetails().getAddressDetail().getSuite() );
+		params.addValue(ProcedureConstant.CONTACT_COUNTRY,contactDetails.getCompanyDetails().getAddressDetail().getCountry().getCountryId());
+		params.addValue(ProcedureConstant.CONTACT_STATE,contactDetails.getCompanyDetails().getAddressDetail().getState().getStateId() );
+		params.addValue(ProcedureConstant.CONTACT_CITYID, contactDetails.getCompanyDetails().getAddressDetail().getCity());
+		params.addValue(ProcedureConstant.CONTACT_ZIPCODE,contactDetails.getCompanyDetails().getAddressDetail().getZipCode());
+		params.addValue(ProcedureConstant.CONTACT_HEADQUARTERS,contactDetails.getCompanyDetails().getAddressDetail().isHeadQuarters());
+		params.addValue(ProcedureConstant.CONTACT_CREATEDBY,contactDetails.getCreatedBy());
+		params.addValue(ProcedureConstant.CONTACT_CONTACTLISTNAME,contactDetails.getContactListName());
+		
+		
+		
+		final SimpleJdbcCall simpleJdbcCall = new SimpleJdbcCall(jdbcTemplate)
+				.withProcedureName(SqlConstant.ADD_CONTACT_DETAILS);
+		
+		simpleJdbcCall.declareParameters(new SqlParameter(
+				ProcedureConstant.CONTACT_HEADQUARTERS, Types.TINYINT));
+		
+		final java.util.Map<String, Object> result = simpleJdbcCall
+				.execute(params);
 
+		response = Integer.parseInt(String.valueOf(result
+				.get(ProcedureConstant.RESULT)));	
+		
+		return response;
+	}
+	
+	@Override
+	public boolean isContactEmailExist(String emailAddress) throws Exception {
+		
+		boolean response = false;
+		int result = jdbcTemplate.queryForObject(SqlConstant.SQL_CONTACT_EMAIL_EXIST,new Object[] {emailAddress },Integer.class);
+		if (result > 0) {
+			response = true;
+		}
+
+		return response;
+	}
+	@Override
+	public boolean isCompanyExist(String companyName, String websiteName)
+			throws Exception {
+		boolean response = false;
+		int result = jdbcTemplate.queryForObject(SqlConstant.SQL_COMPANY_VALIDATION,
+				new Object[] { companyName, websiteName }, Integer.class);
+		if (result > 0) {
+			response = true;
+		}
+
+		return response;
+		
+	}
+	
+	
 }

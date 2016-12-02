@@ -29,11 +29,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.resource.ResourceUrlEncodingFilter;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * This is class is used to create the beans while starting of the server
+ * @author narasimhareddyk
+ *
+ */
 @Configuration
 @Import({SecurityConfig.class})
 @EnableWebMvc
@@ -74,16 +79,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		HikariDataSource ds = new HikariDataSource(config);
 		return ds;
 	}
-
-  /*  @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/vendor/**")
-                .addResourceLocations("/resources/vendor/")
-                .setCachePeriod(0)
-                .resourceChain(true)
-                .addResolver(new GzipResourceResolver())
-                .addResolver(new PathResourceResolver());
-    }*/
 
     @Override
     public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {

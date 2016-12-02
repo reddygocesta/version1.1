@@ -1,5 +1,7 @@
 package com.sensiple.contactsrepository.model;
 
+import java.util.List;
+
 public class Configuration {
 	
 	private long configurationId;
@@ -16,9 +18,25 @@ public class Configuration {
 	private String contactAvailability;
 	private ContactStatus contactStatus;
 	private CampaignContactStatus campaignContactStatus;
+	private List<ContactStatus> canBeReachedStatusIds;
+	private List<ContactStatus> canNotBeReachedStatusIds;
 	
 	
 	
+	
+	
+	public List<ContactStatus> getCanBeReachedStatusIds() {
+		return canBeReachedStatusIds;
+	}
+	public void setCanBeReachedStatusIds(List<ContactStatus> canBeReachedStatusIds) {
+		this.canBeReachedStatusIds = canBeReachedStatusIds;
+	}
+	public List<ContactStatus> getCanNotBeReachedStatusIds() {
+		return canNotBeReachedStatusIds;
+	}
+	public void setCanNotBeReachedStatusIds(List<ContactStatus> canNotBeReachedStatusIds) {
+		this.canNotBeReachedStatusIds = canNotBeReachedStatusIds;
+	}
 	public long getUserId() {
 		return userId;
 	}

@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -45,11 +46,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.Gson;
 import com.opencsv.CSVReader;
+import com.sensiple.contactsrepository.dao.CommonDAO;
+import com.sensiple.contactsrepository.dao.ContactUploadDAO;
+import com.sensiple.contactsrepository.model.AddressDetails;
+import com.sensiple.contactsrepository.model.CompanyDetails;
+import com.sensiple.contactsrepository.model.CompanySizeDetails;
 import com.sensiple.contactsrepository.model.ContactDetails;
 import com.sensiple.contactsrepository.model.ContactTemp;
+import com.sensiple.contactsrepository.model.CountryDetails;
+import com.sensiple.contactsrepository.model.IndustryDetails;
+import com.sensiple.contactsrepository.model.JobFunction;
+import com.sensiple.contactsrepository.model.JobTitle;
+import com.sensiple.contactsrepository.model.RevenueDetails;
+import com.sensiple.contactsrepository.model.StateDetails;
+import com.sensiple.contactsrepository.model.User;
 import com.sensiple.contactsrepository.service.ContactUploadService;
 import com.sensiple.contactsrepository.utils.Constants;
 import com.sensiple.contactsrepository.utils.ContactsSearch;
+import com.sensiple.contactsrepository.utils.ContactsSession;
+import com.sensiple.contactsrepository.utils.ProcedureConstant;
 import com.sensiple.contactsrepository.utils.UploadMethodValidation;
 import com.sensiple.contactsrepository.utils.UploadValidation;
 
@@ -65,37 +80,65 @@ import net.sf.json.JSONObject;
 	@Autowired
 	private ContactUploadService contactUploadservice;
 	
+	@Autowired
+	private ContactUploadDAO contactUploadDAO;
+	
 	@Inject
 	private Environment environment;
+	private HSSFWorkbook workbook;
+	private CSVReader reader;
+	
+	
+	@Autowired
+	private CommonDAO commonDAO;
 	
 	/*
 	 * GetContactUpload is used to read the csv file from UI. 
 	 * We will the check file validation for empty,regex and length of the field
 	 * once validation done we will split the record in two file (error and success) 
 	 */
-	@SuppressWarnings("resource")
 	@RequestMapping(value = "/contact/contactUpload", method = RequestMethod.POST)
 	public @ResponseBody String getContactUpload(			
 		   @RequestParam("file") MultipartFile file,
-		   @RequestParam("templateName") String templateName)  {
+		   @RequestParam("templateName") String templateName,
+		   HttpServletRequest request)  {
 		
-		 LOGGER.info("*******Enter in getContactUpload*****************");   
+		 LOGGER.info("Enter in getContactUpload");   
 		 String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 		 Gson gson = new Gson();
 		 String jsonResult = Constants.ERROR;
 		 JSONObject userObject = new JSONObject();
 		 successContactList = new ArrayList<ContactTemp>();
 		 errorContactList = new ArrayList<ContactTemp>();
+		 User user=new User();
+		 ContactsSession contactsSession=null;
+		 HttpSession session=request.getSession();
+		 String createdBy="";
+		 List<JobFunction> jobFunctionList = null;
+		 List<CountryDetails> countryList = null;
+		 List<StateDetails> stateList = null;
+		 List<RevenueDetails> revenueDetailslist = null; 
+		 List<CompanySizeDetails> companySizeDetailsList = null;
+		 List<IndustryDetails> industryDetailsList = null;
 		 
 		 try{
 			 File origionalFile = multipartToFile(file);
-			 if(fileExtension.equals("csv")){
-				 
-				 LOGGER.info("*****uploaded file .csv*********");
-				CSVReader reader = null;
+			 //get the login user ID from contactsSession User persistence class
+			 if(session.getAttribute("contactsSession")!=null){
+		 			contactsSession=(ContactsSession)session.getAttribute("contactsSession");
+		 			user=contactsSession.getUser();
+		 			createdBy=String.valueOf(user.getId());
+		 			jobFunctionList = contactsSession.getJobFunctionList();
+		 			countryList = contactsSession.getCountryList();
+		 			stateList = contactsSession.getStateList();
+		 			industryDetailsList = contactsSession.getIndustryDetails();
+		 			revenueDetailslist = contactsSession.getRevenueDetailslist();
+		 			companySizeDetailsList = contactsSession.getCompanySizeDetails();
+			 }
+			 //validate .csv file  contact uploading
+			 if(fileExtension.equals(ProcedureConstant.CONTACT_UPLOAD_CSV)){
 				int i = 0;
-		       
-				reader = new CSVReader(new FileReader(origionalFile));
+		        reader = new CSVReader(new FileReader(origionalFile));
 				String[] line;
 				while ((line = reader.readNext()) != null) {
 					
@@ -233,6 +276,8 @@ import net.sf.json.JSONObject;
 				     contact.setErrorMessage(ErrorMessage);
 				     contact.setContactListName(templateName);
 				     
+				     contact.setCreatedBy(createdBy);
+				     
 				     if(ErrorMessage.equals("")){
 				    	 successContactList.add(contact);
 				     }else{
@@ -242,9 +287,9 @@ import net.sf.json.JSONObject;
 		        i++;
 		       }	              
 			 }
-			 else if(fileExtension.equals("xls") || fileExtension.equals("xlsx")){
-				 LOGGER.info("*****uploaded file .xls or .xlsx*********");
-				 validateCustomerUploadFile(origionalFile,templateName);
+			 //validate .xls and .xlsx contact upload file 
+			 else if(fileExtension.equals(ProcedureConstant.CONTACT_UPLOAD_XLS) || fileExtension.equals(ProcedureConstant.CONTACT_UPLOAD_XLSX)){
+				 validateCustomerUploadFile(origionalFile,templateName,createdBy,jobFunctionList,countryList,stateList,industryDetailsList,revenueDetailslist,companySizeDetailsList);
 			 }
 			 
 			String tomcatDir = "";
@@ -252,14 +297,18 @@ import net.sf.json.JSONObject;
 			   tomcatDir = generateFile(errorContactList,templateName);	        
 	        
 			if(successContactList.size()>0)
-	    	   userObject = contactUploadservice.InsertNewContact(successContactList);
+	    	   userObject = contactUploadservice.insertNewContact(successContactList);
+			List<JobTitle> jobTitleList = commonDAO.getJobTitleList();
+			if(contactsSession!=null){
+			contactsSession.setJobTitleList(jobTitleList);
+			}
 		 
-	       userObject.put("errorCount", errorContactList.size());
-		   userObject.put("errorPath", tomcatDir);
-	  	   jsonResult = gson.toJson(userObject);
+	       userObject.put(ProcedureConstant.CONTACT_UPLOAD_ERRORCOUNT, errorContactList.size());
+		   userObject.put(ProcedureConstant.CONTACT_UPLOAD_ERRORPATH, tomcatDir);
+		   jsonResult = gson.toJson(userObject);
 	  	   
 	   }catch(Exception e){
-		   LOGGER.info("Exception in getContactUpload"+e.getMessage());
+		   LOGGER.info("Exception in getContactUpload"+ExceptionUtils.getStackTrace(e));
 	   }
 	   return jsonResult;
 	 }
@@ -270,12 +319,14 @@ import net.sf.json.JSONObject;
 	 * once validation done we will split the record in two file (error and success) 
 	 */
 	@SuppressWarnings("deprecation")
-	private void validateCustomerUploadFile(File convertedFile,String templateName)throws Exception {
-		 
-			LOGGER.info("ENTER INTO validateCustomerUploadFile");			
+	private void validateCustomerUploadFile(File convertedFile,String templateName,String createdBy,List<JobFunction> jobFunctionList,List<CountryDetails> countryList
+			,List<StateDetails> stateList,List<IndustryDetails> industryDetailsList,List<RevenueDetails> revenueDetailslist,List<CompanySizeDetails> companySizeDetailsList)throws Exception {
+			
+		    LOGGER.info("ENTER INTO validateCustomerUploadFile");			
 			int j = 0;			
 			FileInputStream inputStream = new FileInputStream(convertedFile);
-			HSSFWorkbook workbook = new HSSFWorkbook(inputStream);		
+			
+			workbook = new HSSFWorkbook(inputStream);		
 			Iterator<Sheet> iteratorSheet = workbook.iterator();
 			successContactList = new ArrayList<ContactTemp>();
 			errorContactList = new ArrayList<ContactTemp>();
@@ -290,7 +341,6 @@ import net.sf.json.JSONObject;
 					
 					if(j == 0){
 						int maxNumOfCells = firstSheet.getRow(0).getLastCellNum();
-						
 						while (iterator.hasNext()) {
 							HSSFRow nextRow = (HSSFRow) iterator.next();
 							if(nextRow.getRowNum()==0){
@@ -309,8 +359,8 @@ import net.sf.json.JSONObject;
 
 								data.add(cell);
 							}
-							sheetData.add(data);							
-						}						
+							sheetData.add(data);
+						}			
 					}
 					j++;
 				}
@@ -368,12 +418,23 @@ import net.sf.json.JSONObject;
 		                    case 5:
 			       			     String jobTitleError = UploadMethodValidation.checkJobTitle(cellTextValue);		     			     
 			       			     ErrorMessage = ErrorMessage + jobTitleError;
-			       			     contact.setJobTitle(cellTextValue);
+			       			     if(!cellTextValue.isEmpty()){
+			       			    	 contact.setJobTitle(cellTextValue.trim());
+			       			     }
 			       			    break;
 		                    case 6:
 			       			     String jobFunctionError = UploadMethodValidation.checkJobFunction(cellTextValue);			     			     
 			       			     ErrorMessage = ErrorMessage + jobFunctionError;
-			       			     contact.setJobFunction(cellTextValue);
+			       			     	if(ErrorMessage.equals("")){
+			       			     		String jobFunctionValue=UploadMethodValidation.checkJobFunctionMetaDataInfo(jobFunctionList, cellTextValue);
+			       			     		if(Constants.ERROR.equals(jobFunctionValue)){
+			       			     			ErrorMessage = ErrorMessage + "The Jobfunction entered not available in the meta data";
+			       			     			contact.setJobFunction(cellTextValue);
+			       			     		}else{
+			       			     			contact.setJobFunction(jobFunctionValue);
+			       			     		}
+			       			     	}
+			       			     
 			       			    break;
 		                    case 7:
 			       			     String contactSourceError = UploadMethodValidation.checkContactSource(cellTextValue);		     			     
@@ -408,17 +469,42 @@ import net.sf.json.JSONObject;
 		                    case 13:
 			       			     String revenueError = UploadMethodValidation.checkRevenue(cellTextValue);		     			     
 			       			     ErrorMessage = ErrorMessage + revenueError;
-			       			     contact.setRevenue(cellTextValue);
+		       			     	if(ErrorMessage.equals("")){
+		       			     		String revenueValue=UploadMethodValidation.checkRevenueDetailsMetaDataInfo(revenueDetailslist, cellTextValue);
+		       			     		if(Constants.ERROR.equals(revenueValue)){
+		       			     			ErrorMessage = ErrorMessage + "The revenue range entered not available in the meta data";
+		       			     			contact.setRevenue(cellTextValue);
+		       			     		}else{
+		       			     			contact.setRevenue(revenueValue);
+		       			     		}
+		       			     	}
 			       			    break;
 		                    case 14:
 			       			     String companySizeError = UploadMethodValidation.checkCompanySize(cellTextValue);			     			     
 			       			     ErrorMessage = ErrorMessage + companySizeError;
-			       			     contact.setCompanySize(cellTextValue);
+			       			     if(ErrorMessage.equals("")){
+		       			     		String companySizeValue=UploadMethodValidation.checkCompanySizeMetaDataInfo(companySizeDetailsList, cellTextValue);
+		       			     		if(Constants.ERROR.equals(companySizeValue)){
+		       			     			ErrorMessage = ErrorMessage + "The company size entered not available in the meta data";
+		       			     			contact.setCompanySize(cellTextValue);
+		       			     		}else{
+		       			     			contact.setCompanySize(companySizeValue);
+		       			     		}
+		       			     	}
+			       			     
 			       			    break;
 		                    case 15:
 			       			     String industryError = UploadMethodValidation.checkIndustry(cellTextValue);			     			     
 			       			     ErrorMessage = ErrorMessage + industryError;
-			       			     contact.setIndustry(cellTextValue);
+			       			     if(ErrorMessage.equals("")){
+		       			     		String industryValue=UploadMethodValidation.checkIndustryDetailsMetaDataInfo(industryDetailsList, cellTextValue);
+		       			     		if(Constants.ERROR.equals(industryValue)){
+		       			     			ErrorMessage = ErrorMessage + "The industry entered not available in the meta data";
+		       			     			contact.setIndustry(cellTextValue);
+		       			     		}else{
+		       			     			contact.setIndustry(industryValue);
+		       			     		}
+		       			     	}
 			       			    break;
 		                    case 16:
 			       			     String sicCodeError = UploadMethodValidation.checkSICCode(cellTextValue);		     			     
@@ -448,12 +534,30 @@ import net.sf.json.JSONObject;
 		                    case 21:
 			       			     String countryError = UploadMethodValidation.checkCountry(cellTextValue);			     			     
 			       			     ErrorMessage = ErrorMessage + countryError;
-			       			     contact.setCountry(cellTextValue);
+			       			     if(ErrorMessage.equals("")){
+		       			     		String countryValue=UploadMethodValidation.checkCountryDetailsMetaDataInfo(countryList, cellTextValue);
+		       			     		if(Constants.ERROR.equals(countryValue)){
+		       			     			ErrorMessage = ErrorMessage + "The country entered not available in the meta data";
+		       			     			contact.setCountry(cellTextValue);
+		       			     		}else{
+		       			     			contact.setCountry(countryValue);
+		       			     		}
+		       			     	}
+			       			     
 			       			    break;
 		                    case 22:
 			       			     String stateError = UploadMethodValidation.checkState(cellTextValue);		     			     
 			       			     ErrorMessage = ErrorMessage + stateError;
-			       			     contact.setState(cellTextValue);
+			       			     if(ErrorMessage.equals("")){
+		       			     		String stateValue=UploadMethodValidation.checkStateDetailsMetaDataInfo(stateList, cellTextValue);
+		       			     		if(Constants.ERROR.equals(stateValue)){
+		       			     			ErrorMessage = ErrorMessage + "The state entered not available in the meta data";
+		       			     			contact.setState(cellTextValue);
+		       			     		}else{
+		       			     			contact.setState(stateValue);
+		       			     		}
+		       			     	}
+			       			     
 			       			    break;
 		                    case 23:
 			       			     String cityError = UploadMethodValidation.checkCity(cellTextValue);			     			     
@@ -474,6 +578,7 @@ import net.sf.json.JSONObject;
 		            }
 		            contact.setErrorMessage(ErrorMessage);
 				    contact.setContactListName(templateName);
+				    contact.setCreatedBy(createdBy);
 					if(ErrorMessage.equals("")){
 				    	 successContactList.add(contact);
 				    }else{
@@ -481,7 +586,7 @@ import net.sf.json.JSONObject;
 				    }
 		        }				
 			}catch(Exception e){
-				LOGGER.error("Exception in validateCustomerUploadFile"+e.getMessage());
+				LOGGER.error("Exception in validateCustomerUploadFile"+ExceptionUtils.getStackTrace(e));
 			}
 		}
 	 
@@ -505,7 +610,7 @@ import net.sf.json.JSONObject;
 	 		LOGGER.info("Enter in generateFile");		
 			int hssRow = 0;
 			int  cellIndex = 0;
-			HSSFWorkbook wb=new HSSFWorkbook();
+			workbook = new HSSFWorkbook();
 		      
 		    HSSFSheet sheet = null;
 		    HSSFRow row = null;
@@ -513,10 +618,10 @@ import net.sf.json.JSONObject;
 		    String tomcatDir = "";
 		    
 		    try{
-			    sheet = wb.createSheet("Default Template");
-			    HSSFCellStyle headerCellStyle = wb.createCellStyle();
+			    sheet = workbook.createSheet("Default Template");
+			    HSSFCellStyle headerCellStyle = workbook.createCellStyle();
 			    
-			    HSSFFont boldFont = wb.createFont();
+			    HSSFFont boldFont = workbook.createFont();
 			    boldFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 			    headerCellStyle.setFont(boldFont);
 			    
@@ -528,85 +633,85 @@ import net.sf.json.JSONObject;
 		       
 		   	 	cell = row.createCell(0);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("S.No"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_SNO));
 		        cell = row.createCell(1);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Contact Email ID"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_EMAILID));
 		        cell = row.createCell(2);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("First Name"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_FIRSTNAME));
 		        cell = row.createCell(3);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Middle Name"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_MIDDLENAME));
 		        cell = row.createCell(4);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Last Name"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_LASTNAME));
 		        cell = row.createCell(5);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Job Title"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_JOBTITTLE));
 		        cell = row.createCell(6);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Job Function"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_JOBFUNTION));
 		        cell = row.createCell(7);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Contact Source"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_SOURCE));
 		        cell = row.createCell(8);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Phone Number"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_PHONE));
 		        cell = row.createCell(9);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Extension"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_EXTENSION));
 		        cell = row.createCell(10);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Mobile"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_MOBILE));
 		        cell = row.createCell(11);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Company"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_COMPANY));
 		        cell = row.createCell(12);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Website"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_WEBSITE));
 		        cell = row.createCell(13);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Revenue"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_REVENUE));
 		        cell = row.createCell(14);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Company Size"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_COMPANY_SIZE));
 		        cell = row.createCell(15);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Industry"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_INDUSTRY));
 		        cell = row.createCell(16);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("SIC code"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_SICCODE));
 		        cell = row.createCell(17);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Company Email Id"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_COMPANY_EMAIL));
 		        cell = row.createCell(18);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Adress Line 1"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_ADDRESS1));
 		        cell = row.createCell(19);		       
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Address Line 2"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_ADDRESS2));
 		        cell = row.createCell(20);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Suite"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_SUITE));
 		        cell = row.createCell(21);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Country"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_COUNTRY));
 		        cell = row.createCell(22);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("State"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_STATE));
 		        cell = row.createCell(23);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("City"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_CITY));
 		        cell = row.createCell(24);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Zip"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_ZIP));
 		        cell = row.createCell(25);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Head Quarters"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_HEAD));
 		        cell = row.createCell(26);
 		        cell.setCellStyle(headerCellStyle);
-		        cell.setCellValue(new HSSFRichTextString("Error Message"));
+		        cell.setCellValue(new HSSFRichTextString(ProcedureConstant.HEADER_ERROR_MESSAGE));
 		       		 	
 				hssRow++;			
 				
@@ -773,7 +878,7 @@ import net.sf.json.JSONObject;
 			        	
 			        Date date = new Date() ;
 			        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-			        String filePath = templateName+dateFormat.format(date)+".xlsx";
+			        String filePath = templateName+dateFormat.format(date)+ProcedureConstant.ERROR_FILE_TYPE;
 			        
 			        tomcatDir = tomcatDir+File.separator+filePath;
 			        File fileTemp = new File(tomcatDir);
@@ -782,11 +887,11 @@ import net.sf.json.JSONObject;
 			        }
 			        
 					FileOutputStream out = new FileOutputStream(fileTemp);
-					wb.write(out);
+					workbook.write(out);
 					out.close();
 				}
 		 	}catch(Exception e){
-		 		LOGGER.error("Exception in generateFile"+e.getMessage());
+		 		LOGGER.error("Exception in generateFile"+ExceptionUtils.getStackTrace(e));
 		 	}	
 		    return tomcatDir;
 	}
@@ -804,7 +909,7 @@ import net.sf.json.JSONObject;
     }
  	
    /*
-	* ContactDownload method is used to download the error file template
+	* This method is used to download the error file template
 	*/
  	@RequestMapping(value = "/contact/contactDownload", method = RequestMethod.GET)
 	public void contactDownload(Model model,HttpServletRequest request,
@@ -815,7 +920,7 @@ import net.sf.json.JSONObject;
     }
  	
    /*
-	* GetDownload method is used to write the response in file
+	* This method is used to write the response in file
 	*/
  	public void getDownload(HttpServletRequest request,HttpServletResponse response,
  			String filePath) throws IOException {
@@ -845,13 +950,15 @@ import net.sf.json.JSONObject;
         outStream.close();
  	}
  	
+ 	/*
+	 * This method is used to get the list of contact details. 
+	 */
  	@RequestMapping(value = "/contact/getContacts", method = RequestMethod.POST)
 	public @ResponseBody String getContactsList(@RequestBody ContactsSearch contactsSearch) {
 
 		JSONObject contactObject = new JSONObject();
 		long numberOfRecords = 0;
-		System.out
-				.println("--------------getContactsList method invoked--------------");
+		LOGGER.info("getContactsList method invoked");
 		List<ContactDetails> contactList = new ArrayList<ContactDetails>();
 		try {
 			contactList = contactUploadservice.getContatcList(contactsSearch.getStartRecord(),contactsSearch.getRecordToShow(),contactsSearch.getContactListName(),contactsSearch.getContactStatus(),
@@ -871,15 +978,16 @@ import net.sf.json.JSONObject;
 			
 		} catch (Exception e) {
 			LOGGER.error(ExceptionUtils.getStackTrace(e));
-			System.out.println(ExceptionUtils.getStackTrace(e));
+			
 		}
-		System.out
-				.println("--------------getContactsList method invoked-------------- "
-						+ contactObject.toString());
+		
 		
 		return new Gson().toJson(contactObject);
 	}
  	
+ 	/*
+	 * This method is used to view the specific contact details. 
+	 */
  	@RequestMapping(value = "/contact/viewContact/{contactId}", method = RequestMethod.GET)
 	public @ResponseBody String ViewContact(@PathVariable("contactId") final int contactId) {
 
@@ -887,8 +995,7 @@ import net.sf.json.JSONObject;
 		ContactDetails contact = new ContactDetails();
 		try {
 			
-			contact=contactUploadservice.getContactDetails(contactId);
-			
+			contact=contactUploadservice.getContactDetails(contactId);			
 			contactObject.put("contact", contact);
 			
 		} catch (Exception e) {
@@ -914,4 +1021,136 @@ import net.sf.json.JSONObject;
 		return isExist;
 	}
 	
+	/**
+	 * This method is used to get the company names
+	 * @param companyName
+	 * @return
+	 */
+	@RequestMapping(value = "/contact/getCompanyDetails", method = RequestMethod.POST)
+	public String getCompanyDetails(@RequestParam("companyName") String companyName) {
+		LOGGER.info("Initialize the getCompanyDetails method in controller");
+		List<CompanyDetails> comapnyDetails = new ArrayList<CompanyDetails>();
+		try {
+			comapnyDetails = contactUploadservice.getCompanyDetails(companyName);
+			LOGGER.debug("Response from getCompany"+companyName);
+		} catch (Exception e) {
+			LOGGER.error("Exception in getCompanyDetails method"+ExceptionUtils.getStackTrace(e));
+		}
+		String response = new Gson().toJson(comapnyDetails);
+		
+		return response;
+	}
+	
+	/**
+	 * This method is used to get the Address Details.
+	 * @param companyName
+	 * @return
+	 */
+	@RequestMapping(value = "/contact/getLocationDetails", method = RequestMethod.POST)
+	public String getLocationDetails(@RequestParam("companyId") String companyId) {
+		LOGGER.info("Initialize the getLocationDetails method in controller");
+		
+		List<AddressDetails> addressDetails = new ArrayList<AddressDetails>();
+		try {
+			addressDetails = contactUploadservice.getLocationDetails(companyId);
+			
+		} catch (Exception e) {
+			LOGGER.error("Exception in getLocationDetails method"+ExceptionUtils.getStackTrace(e));
+		}
+		String response = new Gson().toJson(addressDetails);
+		
+		return response;
+	}
+	
+	/**
+	 * This method is used to get the delete the contact.
+	 * @param companyName
+	 * @return
+	 */
+	@RequestMapping(value = "/contact/deleteContact", method = RequestMethod.POST)
+	public boolean deleteContact(@RequestParam String contactsId) {
+		
+		LOGGER.info("Initialize the deleteContact method in controller");
+		
+		boolean isDeleted = false;
+		
+		try {
+			isDeleted = contactUploadservice.deleteContact(contactsId);
+		} catch (Exception e) {
+			LOGGER.error("Exception in deleteContact method"+ExceptionUtils.getStackTrace(e));
+		}		
+		return isDeleted;
+	}
+	
+	/**
+	 * This method is used to save the contact details.
+	 * @param companyName
+	 * @return
+	 */
+	@RequestMapping(value = "/contact/addContact", method = RequestMethod.POST)
+	public int addContactDetails(@RequestBody ContactDetails contactDetails) {
+		
+		int response = 0;
+		
+		try {
+			response = contactUploadservice.addContactDetails(contactDetails);
+		} catch (Exception e) {
+			LOGGER.error("Exception in addContactDetails method"+ExceptionUtils.getStackTrace(e));
+		}	
+		
+		return response;
+	}
+	
+	/**
+	 * This method is used to check whether entered mail is already available.
+	 * 
+	 * @param emailAddress
+	 * @return true or false.
+	 */
+	@RequestMapping(value = "/contact/isContactEmailExist", method = RequestMethod.POST)
+	public @ResponseBody boolean isContactEmailExist(@RequestBody String emailAddress) {
+
+		boolean isExist = false;
+		org.codehaus.jettison.json.JSONObject emailObj = null;
+
+		try {
+
+			emailObj = new org.codehaus.jettison.json.JSONObject(emailAddress);
+			String email = emailObj.getString(Constants.EMAIL_ADDRESS);
+			isExist = contactUploadDAO.isContactEmailExist(email);
+
+		} catch (Exception e) {
+
+			LOGGER.error("Exception occured in isEmailExist method : "
+					+ ExceptionUtils.getStackTrace(e));
+
+		}
+
+		return isExist;
+	}
+	@RequestMapping(value = "/contact/isCompanyExist", method = RequestMethod.POST)
+	public @ResponseBody boolean isCompanyExist(@RequestBody String data) {
+
+		boolean isExist = false;
+		org.codehaus.jettison.json.JSONObject companyObj = null;
+
+		try {
+
+			companyObj = new org.codehaus.jettison.json.JSONObject(data);
+			String companyName = companyObj.getString(Constants.COMPANY_NAME);
+			String companyWebsite = companyObj.getString(Constants.COMPANYWEBISTE);
+			
+			isExist = contactUploadservice.isCompanyExist(companyName, companyWebsite);
+
+		} catch (Exception e) {
+
+			LOGGER.error("Exception occured in isCompanyExist method : "
+					+ ExceptionUtils.getStackTrace(e));
+
+		}
+
+		return isExist;
+	}
+	
+
 }

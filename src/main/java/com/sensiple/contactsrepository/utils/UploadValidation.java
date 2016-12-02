@@ -15,7 +15,7 @@ public class UploadValidation {
 	public static int TWELVE = 12;
 	
 	public static boolean getNullAndEmpty(String text){
-		System.out.println("text:::"+text);
+		
 		if(text == null || text.length() == 0 || text.equals("null") || text.equals("")){
 			return false;			
 		}

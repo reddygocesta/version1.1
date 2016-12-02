@@ -20,7 +20,19 @@ public class CompanyDetails {
 	
 	private String companyEmailId;
 	
+	private AddressDetails addressDetail;
+	
 	private List<AddressDetails> addressDetails;
+	
+	private CompanySizeDetails companySizeDetails;
+	
+	private RevenueDetails revenueDetails;
+	
+	private IndustryDetails industryDetails;
+	
+	private SicCodeDetails sicCodeDetails;
+	
+	private long previousCompanyId;
 
 	public List<AddressDetails> getAddressDetails() {
 		return addressDetails;
@@ -92,6 +104,60 @@ public class CompanyDetails {
 
 	public void setCompanyEmailId(String companyEmailId) {
 		this.companyEmailId = companyEmailId;
+	}
+
+	/**
+	 * @return the addressDetail
+	 */
+	public AddressDetails getAddressDetail() {
+		return addressDetail;
+	}
+
+	/**
+	 * @param addressDetail the addressDetail to set
+	 */
+	public void setAddressDetail(AddressDetails addressDetail) {
+		this.addressDetail = addressDetail;
+	}
+
+	public CompanySizeDetails getCompanySizeDetails() {
+		return companySizeDetails;
+	}
+
+	public void setCompanySizeDetails(CompanySizeDetails companySizeDetails) {
+		this.companySizeDetails = companySizeDetails;
+	}
+
+	public RevenueDetails getRevenueDetails() {
+		return revenueDetails;
+	}
+
+	public void setRevenueDetails(RevenueDetails revenueDetails) {
+		this.revenueDetails = revenueDetails;
+	}
+
+	public IndustryDetails getIndustryDetails() {
+		return industryDetails;
+	}
+
+	public void setIndustryDetails(IndustryDetails industryDetails) {
+		this.industryDetails = industryDetails;
+	}
+
+	public SicCodeDetails getSicCodeDetails() {
+		return sicCodeDetails;
+	}
+
+	public void setSicCodeDetails(SicCodeDetails sicCodeDetails) {
+		this.sicCodeDetails = sicCodeDetails;
+	}
+
+	public long getPreviousCompanyId() {
+		return previousCompanyId;
+	}
+
+	public void setPreviousCompanyId(long previousCompanyId) {
+		this.previousCompanyId = previousCompanyId;
 	}
 
 	

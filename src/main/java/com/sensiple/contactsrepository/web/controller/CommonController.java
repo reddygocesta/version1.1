@@ -1,5 +1,6 @@
 package com.sensiple.contactsrepository.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.sensiple.contactsrepository.dao.CommonDAO;
 import com.sensiple.contactsrepository.model.CampaignBusinessUnit;
+import com.sensiple.contactsrepository.model.CampaignCategory;
 import com.sensiple.contactsrepository.model.CampaignRegion;
 import com.sensiple.contactsrepository.model.CampaignStatus;
 import com.sensiple.contactsrepository.model.CampaignType;
@@ -27,11 +29,20 @@ import com.sensiple.contactsrepository.model.IndustryDetails;
 import com.sensiple.contactsrepository.model.JobFunction;
 import com.sensiple.contactsrepository.model.JobTitle;
 import com.sensiple.contactsrepository.model.RevenueDetails;
+import com.sensiple.contactsrepository.model.Role;
 import com.sensiple.contactsrepository.utils.ContactsSession;
 
 import net.sf.json.JSONObject;
 
- @RestController
+ /**
+ * This Class is used for getting all the meta table data from session
+ * 
+ *@author marshallv
+ *
+ */
+
+@RestController
+@RequestMapping(value = "/common/")
  public class CommonController {
 	
 	private Logger LOGGER = Logger.getLogger(CommonController.class);
@@ -39,7 +50,44 @@ import net.sf.json.JSONObject;
 	@Inject
 	private CommonDAO commonDAO;
 	
- 	@RequestMapping(value = "/common/getCountryList", method = RequestMethod.GET)
+	
+	/**
+	 * This method is used to get the list of roles from session.
+	 * 
+	 * @return list of roles.
+	 */
+	@RequestMapping(value = "getRole", method = RequestMethod.GET)
+	public @ResponseBody String getRole(HttpServletRequest request) {
+
+		JSONObject contactObject = new JSONObject();
+ 		HttpSession session=request.getSession();
+ 		
+		List<Role> roleList = new ArrayList<Role>();
+		ContactsSession contactsSession;
+		
+		try {
+			
+			if(session.getAttribute("contactsSession")!=null){
+	 			contactsSession=(ContactsSession)session.getAttribute("contactsSession");
+	 			roleList = contactsSession.getRoleList();
+	 		}
+	 		else{
+	 			roleList = commonDAO.getRole();
+	 		}
+
+		} catch (Exception e) {
+
+			LOGGER.error(ExceptionUtils.getStackTrace(e));
+
+		}
+		contactObject.put("roleList", roleList);
+ 		return new Gson().toJson(contactObject);
+	}
+
+	/*
+	 * This method is used to get the list of country from session. 
+	 */
+ 	@RequestMapping(value = "getCountryList", method = RequestMethod.GET)
 	public @ResponseBody String getCountryList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -63,7 +111,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getContactStatus", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of contact status from session. 
+	 */
+ 	@RequestMapping(value = "getContactStatus", method = RequestMethod.GET)
 	public @ResponseBody String getContactStatus(HttpServletRequest request) {
  		
  		JSONObject contactObject = new JSONObject();
@@ -87,7 +138,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getRevenueList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of revenues from session. 
+	 */
+ 	@RequestMapping(value = "getRevenueList", method = RequestMethod.GET)
 	public @ResponseBody String getRevenueList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -109,8 +163,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	
- 	@RequestMapping(value = "/common/getCompanySizeList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of company sizes from session. 
+	 */
+ 	@RequestMapping(value = "getCompanySizeList", method = RequestMethod.GET)
 	public @ResponseBody String getCompanySizeList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -135,7 +191,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getIndustryList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of industries from session. 
+	 */
+ 	@RequestMapping(value = "getIndustryList", method = RequestMethod.GET)
 	public @ResponseBody String getIndustryList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -157,7 +216,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getJobTitleList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of job title from session. 
+	 */
+ 	@RequestMapping(value = "getJobTitleList", method = RequestMethod.GET)
 	public @ResponseBody String getJobTitleList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -183,7 +245,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getJobFunctionList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of job functions from session. 
+	 */
+ 	@RequestMapping(value = "getJobFunctionList", method = RequestMethod.GET)
 	public @ResponseBody String getJobFunctionList(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -207,7 +272,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getContactServiceOfferingList", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of contact service offerings  from session. 
+	 */
+ 	@RequestMapping(value = "getContactServiceOfferingList", method = RequestMethod.GET)
 	public @ResponseBody String getContactServiceOffering(HttpServletRequest request) {
  		JSONObject contactObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -232,7 +300,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getCampaignStatus", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of campaign status from session. 
+	 */
+ 	@RequestMapping(value = "getCampaignStatus", method = RequestMethod.GET)
 	public @ResponseBody String getCampaignStatus(HttpServletRequest request) {
  		JSONObject campaignObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -257,7 +328,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getCampaignType", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of campaign types from session. 
+	 */
+ 	@RequestMapping(value = "getCampaignType", method = RequestMethod.GET)
 	public @ResponseBody String getCampaignType(HttpServletRequest request) {
  		JSONObject campaignObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -282,7 +356,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getCampaignBusinessUnit", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of campaign business units from session. 
+	 */
+ 	@RequestMapping(value = "getCampaignBusinessUnit", method = RequestMethod.GET)
 	public @ResponseBody String getCampaignBusinessUnit(HttpServletRequest request) {
  		JSONObject campaignObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -306,7 +383,10 @@ import net.sf.json.JSONObject;
  		
  	}
  	
- 	@RequestMapping(value = "/common/getCampaignRegion", method = RequestMethod.GET)
+ 	/*
+	 * This method is used to get the list of campaign regions from session. 
+	 */
+ 	@RequestMapping(value = "getCampaignRegion", method = RequestMethod.GET)
 	public @ResponseBody String getCampaignRegion(HttpServletRequest request) {
  		JSONObject campaignObject = new JSONObject();
  		HttpSession session=request.getSession();
@@ -330,4 +410,34 @@ import net.sf.json.JSONObject;
  		return new Gson().toJson(campaignObject);
  		
  	}
+ 	
+ 	
+ 	/*
+	 * This method is used to get the list of campaign category from session. 
+	 */
+ 	@RequestMapping(value = "getCampaignCategory", method = RequestMethod.GET)
+	public @ResponseBody String getCampaignCategory(HttpServletRequest request) {
+ 		JSONObject campaignObject = new JSONObject();
+ 		HttpSession session=request.getSession();
+ 		ContactsSession contactsSession;
+ 		List<CampaignCategory> campaignCategoryList = null;
+ 		try {
+	 		if(session.getAttribute("contactsSession")!=null){
+	 			contactsSession=(ContactsSession)session.getAttribute("contactsSession");
+	 			campaignCategoryList = contactsSession.getCampaignCategoryList();
+	 		}
+	 		else{
+	 			
+	 			campaignCategoryList = commonDAO.getCampaignCategory();
+				
+	 		}
+ 		} catch (Exception e) {
+ 			LOGGER.error("Exception in getCampaignType method"+ExceptionUtils.getStackTrace(e));
+ 			}
+ 		
+ 		campaignObject.put("campaignCategoryList", campaignCategoryList);
+ 		return new Gson().toJson(campaignObject);
+ 		
+ 	}
+ 	
 }

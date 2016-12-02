@@ -20,10 +20,24 @@ table
 {
     table-layout:fixed;
 }
-td 
+table td 
 {
     word-wrap:break-word;
+	font-size: 13px;
 }
+table th
+{
+	background-color: #2196f3;
+	color: #fff;
+	font-size: 13px;
+	font-weight: normal;
+}
+.table-bordered>thead>tr>td, .table-bordered>thead>tr>th
+{
+	border-bottom: 0;
+}
+
+
 /*.login-body
 {
 	background-image:url(../images/Login-background.jpg);
@@ -48,7 +62,7 @@ td
 .required
 {
 	color: #a94442;
-	font-size: 20px;
+	font-size: 15px;
 }
 .text-left .btn, .text-center .btn
 {
@@ -106,11 +120,31 @@ td
 	border-radius:20px;
 	padding: 3px 25px;
 }
-.checkbox .btn:focus {outline:0;}
+.checkbox .btn:focus 
+{	
+	outline:0;
+}
 .home-page .panel
 {
 	min-height:310px;
+	margin-top: 15px;
 }
+.home-page .panel-body span
+{
+	padding-top: 10px;
+	font-size: 15px;
+    color: #4d575d;
+}
+
+.pagination
+{
+	margin-top: 0px;
+}
+.badge
+{
+	background-color: #2196f3;
+}
+
 /* Login Form Footer */
 .copyright-text, .copyright-text a, .copyright-text a:hover 
 {
@@ -219,7 +253,7 @@ td
 	color:#90cbff;
 	background:url(../images/breadcrumbs_icon.png) top right no-repeat;
 	padding-right: 15px;
-    background-position-y: 8px;
+    background-position: 100%;
 }
 .breadcrumb_nav li:last-child
 {
@@ -258,6 +292,12 @@ td
 {
 	padding: 0 10px;
 	font-family: Roboto Condensed;
+}
+
+.home-page, .configuration-page, .add-contact, .manage-contacts, .manage-campaign, .contact-view, .upload-contacts, .upload-successful,
+.loginPanel, .add-campaign, .add-campaign2
+{
+	padding-bottom:100px;
 }
 
 .contact-panel
@@ -313,7 +353,7 @@ td
 }
 
 .sidebar-wrapper {
-    z-index: 10;
+    z-index: 50;
     position: fixed; 
     left: 250px;
     width: 0;
@@ -444,12 +484,9 @@ td
 	font-size:18px;
 	font-weight:normal;
 }
-.form-control:active
-{
-	border-color: #a94442;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-}
+
+/* md dialog box */
+
 md-dialog-actions
 {
 	border-top: 1px solid rgba(195, 194, 194, 0.55);
@@ -472,6 +509,7 @@ md-dialog-actions
 	border-radius: 4px !important;
 }
 
+
 /* Configuration Page */
 .configuration label
 {
@@ -486,8 +524,7 @@ md-dialog-actions
 }
 div.tooltip 
 {   
-  position: absolute;           
-  text-align: center;           
+  position: absolute;                     
   width: 500px;           
   height: 28px;                 
   padding: 2px;                          
@@ -502,22 +539,19 @@ div.tooltip
 }
 
 
-
 /* Manage Contact / Contact View */
+
 .contact-list-table th:first-child {
-	width: 45px;
-}
+	width: 30px;
+} 
 .contact-list-table th:last-child {
-	width: 100px;
-}
-.campaign-details-table th:first-child {
-	width: 45px;
-}
+	width: 75px;
+} 
 .contact-view h4
 {
 	font-family: 'Open Sans', sans-serif;
 }
-.manage-contacts select[multiple]
+select[multiple]
 {
 	height: 34px;
 }
@@ -525,11 +559,11 @@ div.tooltip
 {
 	word-wrap:break-word;	
 }
-.manage-contacts .alert
+.manage-contacts .alert, .manage-campaign .alert, .manage-oraganization .alert, .add-campaign2 .alert
 {
 margin-top: 20px;	
 }
-.manage-contacts .alert a
+.manage-contacts .alert a, .manage-campaign .alert a, .upload-successful .alert a, .manage-oraganization .alert a, .add-campaign2 .alert a
 {
 	color: #3c763d;
 	text-decoration: underline;
@@ -544,11 +578,25 @@ margin-top: 20px;
 {
 	font-size:10px;
 }
+.contact-list-btn
+{
+	margin-bottom: 15px;
+}
+.contact-list-btn .btn-success
+{
+	margin-right: 10px;
+}
+
 /* Add Contact Page */
 
 .add-contact select[multiple]
 {
 	height:34px;
+}
+.add-contact .fa-times
+{
+	border-radius: 50%;
+    padding: 2px 2px 2px 3px;
 }
 
 /* Upload Contacts */
@@ -574,13 +622,49 @@ margin-top: 20px;
 	margin-top: 20px;
 }
 
-
 /* Manage Campaign */
+.campaign-list-table th:last-child {
+	width: 100px;
+}
 
-.campaign-list-table th:first-child 
+/* Upload Successful */
+
+.upload-successful p
+{
+	margin: 30px 0;
+}
+.upload-successful .btn
+{
+	margin-top:35px;
+}
+.upload-successful .alert a
+{
+	color: #31708f;
+	text-decoration: underline;
+}
+
+/* Add Campaign Page */
+.add-campaign textarea
+{
+	resize: vertical;
+}
+.add-campaign2 .search-name 
+{
+	text-align: right;
+}
+.add-campaign2 .add-campaign-table
+{
+	overflow-x: scroll;
+}
+.add-campaign2 table th
+{
+	width:100px;
+}
+.add-campaign2 table th:first-child
 {
 	width: 45px;
 }
+
 
 /* Media Queries */
 
@@ -644,3 +728,16 @@ margin-top: 20px;
 }
 
 }	
+
+
+ul.dropdown-menu li {
+            cursor: pointer;
+        }
+
+            ul.dropdown-menu li span.red {
+                color: red;
+            }
+
+            ul.dropdown-menu li span.green {
+                color: green;
+            }

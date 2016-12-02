@@ -7,6 +7,5 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("com.sensiple.contactsrepository")
 public class ServiceConfig {
    
-     
 
 }

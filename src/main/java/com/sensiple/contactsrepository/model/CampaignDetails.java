@@ -1,7 +1,5 @@
 package com.sensiple.contactsrepository.model;
 
-import com.sensiple.contactsrepository.model.CampaignDetails;
-
 public class CampaignDetails {
 
 	private long campaignId;
@@ -18,9 +16,9 @@ public class CampaignDetails {
 
 	private CampaignType campaignType;
 
-	private String leadTime;
+	private int leadTime;
 
-	private String contactSheetLimit;
+	private int contactSheetLimit;
 
 	private User campaignOwner;
 
@@ -53,6 +51,9 @@ public class CampaignDetails {
 	private String actualRunDate;
 	
 	private int totalRecords;
+	
+	private boolean isIncludeCompanies;
+	
 
 	public long getCampaignId() {
 		return campaignId;
@@ -92,22 +93,6 @@ public class CampaignDetails {
 
 	public void setCampaignType(CampaignType campaignType) {
 		this.campaignType = campaignType;
-	}
-
-	public String getLeadTime() {
-		return leadTime;
-	}
-
-	public void setLeadTime(String leadTime) {
-		this.leadTime = leadTime;
-	}
-
-	public String getContactSheetLimit() {
-		return contactSheetLimit;
-	}
-
-	public void setContactSheetLimit(String contactSheetLimit) {
-		this.contactSheetLimit = contactSheetLimit;
 	}
 
 	public String getPlannedRunDate() {
@@ -203,20 +188,6 @@ public class CampaignDetails {
 	}
 
 	/**
-	 * @return the owner
-	 */
-	public User getcampaignOwner() {
-		return campaignOwner;
-	}
-
-	/**
-	 * @param owner the owner to set
-	 */
-	public void setcampaignOwner(User campaignOwner) {
-		this.campaignOwner = campaignOwner;
-	}
-
-	/**
 	 * @return the campaignCategory
 	 */
 	public CampaignCategory getCampaignCategory() {
@@ -294,6 +265,30 @@ public class CampaignDetails {
 	 */
 	public void setActualRunDate(String actualRunDate) {
 		this.actualRunDate = actualRunDate;
+	}
+
+	public int getLeadTime() {
+		return leadTime;
+	}
+
+	public void setLeadTime(int leadTime) {
+		this.leadTime = leadTime;
+	}
+
+	public boolean isIncludeCompanies() {
+		return isIncludeCompanies;
+	}
+
+	public void setIncludeCompanies(boolean isIncludeCompanies) {
+		this.isIncludeCompanies = isIncludeCompanies;
+	}
+
+	public int getContactSheetLimit() {
+		return contactSheetLimit;
+	}
+
+	public void setContactSheetLimit(int contactSheetLimit) {
+		this.contactSheetLimit = contactSheetLimit;
 	}
 
 	

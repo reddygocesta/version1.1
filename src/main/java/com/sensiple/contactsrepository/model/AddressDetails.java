@@ -19,7 +19,11 @@ public class AddressDetails {
 	
 	private boolean headQuarters;
 	
+	private String location;
+	
 	private String suite;
+	
+	private long previousLocationId;
 	
 	public String getSuite() {
 		return suite;
@@ -91,6 +95,28 @@ public class AddressDetails {
 
 	public void setHeadQuarters(boolean headQuarters) {
 		this.headQuarters = headQuarters;
+	}
+
+	/**
+	 * @return the location
+	 */
+	public String getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public long getPreviousLocationId() {
+		return previousLocationId;
+	}
+
+	public void setPreviousLocationId(long previousLocationId) {
+		this.previousLocationId = previousLocationId;
 	}
 
 	

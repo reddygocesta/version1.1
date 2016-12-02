@@ -3,6 +3,7 @@ package com.sensiple.contactsrepository.utils;
 import java.util.List;
 
 import com.sensiple.contactsrepository.model.CampaignBusinessUnit;
+import com.sensiple.contactsrepository.model.CampaignCategory;
 import com.sensiple.contactsrepository.model.CampaignRegion;
 import com.sensiple.contactsrepository.model.CampaignStatus;
 import com.sensiple.contactsrepository.model.CampaignType;
@@ -14,10 +15,31 @@ import com.sensiple.contactsrepository.model.IndustryDetails;
 import com.sensiple.contactsrepository.model.JobFunction;
 import com.sensiple.contactsrepository.model.JobTitle;
 import com.sensiple.contactsrepository.model.RevenueDetails;
+import com.sensiple.contactsrepository.model.Role;
+import com.sensiple.contactsrepository.model.StateDetails;
+import com.sensiple.contactsrepository.model.User;
 
+/**
+ * This Class is used for putting all the meta table data to session
+ *
+ * @author marshallv
+ *
+ */
 public class ContactsSession {
+	
+	private List<Role> roleList;
 
 	private List<CountryDetails> countryList;
+	
+	private List<StateDetails> stateList;
+
+	public List<StateDetails> getStateList() {
+		return stateList;
+	}
+
+	public void setStateList(List<StateDetails> stateList) {
+		this.stateList = stateList;
+	}
 
 	private List<ContactStatus> contactStatuslist;
 
@@ -40,6 +62,10 @@ public class ContactsSession {
 	private List<CampaignBusinessUnit> campaignBusinessUnitList;
 
 	private List<CampaignRegion> campaignRegionList;
+	
+	private User user;
+	
+	private List<CampaignCategory> campaignCategoryList;
 
 	public List<ContactStatus> getContactStatuslist() {
 		return contactStatuslist;
@@ -163,6 +189,36 @@ public class ContactsSession {
 	 */
 	public void setCampaignRegionList(List<CampaignRegion> campaignRegionList) {
 		this.campaignRegionList = campaignRegionList;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	/**
+	 * @return the roleList
+	 */
+	public List<Role> getRoleList() {
+		return roleList;
+	}
+
+	/**
+	 * @param roleList the roleList to set
+	 */
+	public void setRoleList(List<Role> roleList) {
+		this.roleList = roleList;
+	}
+
+	public List<CampaignCategory> getCampaignCategoryList() {
+		return campaignCategoryList;
+	}
+
+	public void setCampaignCategoryList(List<CampaignCategory> campaignCategoryList) {
+		this.campaignCategoryList = campaignCategoryList;
 	}
 
 }

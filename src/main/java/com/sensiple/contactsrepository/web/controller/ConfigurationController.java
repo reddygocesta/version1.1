@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,11 +20,10 @@ import com.google.gson.Gson;
 import com.sensiple.contactsrepository.model.CampaignConfiguration;
 import com.sensiple.contactsrepository.model.CampaignServiceOffering;
 import com.sensiple.contactsrepository.model.Configuration;
-import com.sensiple.contactsrepository.model.ContactDetails;
+import com.sensiple.contactsrepository.model.ContactStatus;
 import com.sensiple.contactsrepository.model.User;
 import com.sensiple.contactsrepository.service.ConfigurationService;
-
-import net.sf.json.JSONObject;
+import com.sensiple.contactsrepository.utils.Constants;
 
 /**
  * 
@@ -47,7 +48,6 @@ public class ConfigurationController {
 	@RequestMapping(value = "saveFieldCongiguration", method = RequestMethod.POST)
 	public int saveFieldCongiguration(@RequestBody Configuration configuration) {
 		LOGGER.info("Initialize the saveFieldCongiguration method in controller");
-		
 		int response = 0;
 		try {
 			response = configurationService.saveFieldConfiguration(configuration);
@@ -66,6 +66,10 @@ public class ConfigurationController {
 		Configuration configuration = null;
 		try {
 			configuration = configurationService.getFieldCongiguration(userId);
+			List<ContactStatus> canBeReachedStatus = configurationService.getContactStatus(Constants.CAN_BE_REACHED);
+			configuration.setCanBeReachedStatusIds(canBeReachedStatus);
+			List<ContactStatus> canNotBeReachedStatus = configurationService.getContactStatus(Constants.CAN_NOT_BE_REACHED);
+			configuration.setCanNotBeReachedStatusIds(canNotBeReachedStatus);
 			LOGGER.debug("Response from save Field configuration"+configuration);
 		} catch (Exception e) {
 			LOGGER.error("Exception in get Field Configuration method"+ExceptionUtils.getStackTrace(e));

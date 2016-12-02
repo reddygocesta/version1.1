@@ -9,6 +9,7 @@ import com.sensiple.contactsrepository.dao.ConfigurationDAO;
 import com.sensiple.contactsrepository.model.CampaignConfiguration;
 import com.sensiple.contactsrepository.model.CampaignServiceOffering;
 import com.sensiple.contactsrepository.model.Configuration;
+import com.sensiple.contactsrepository.model.ContactStatus;
 import com.sensiple.contactsrepository.model.User;
 import com.sensiple.contactsrepository.service.ConfigurationService;
 @Named
@@ -53,6 +54,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	@Override
 	public int deConfigureCampaign(final String configurationIds) throws Exception {
 		return configurationDAO.deConfigureCampaign(configurationIds);
+	}
+
+	@Override
+	public List<ContactStatus> getContactStatus(final String status) throws Exception {
+		return configurationDAO.getContactStatus(status);
 	}
 	
 

@@ -8,26 +8,36 @@ Created Date: 	11/24/2016
 
 'use strict';   
 
-myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,ContactsService,$mdDialog,ConfigurationService) {
+myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,ContactsService,$mdDialog,ConfigurationService,$rootScope) {
 			  
 			$scope.configuration={};
 			$scope.campaign={};
-			$scope.mappings={};
+			$scope.contactStatusList={};
+			$scope.campaignContactStatusList=[];
 			$scope.daytypes={};
 			$scope.statusmappings={};
 			$scope.campaignConfiguration = {};
 			getstatus();
-			getdaystypes();
+			$scope.selectedUserIds = [];
+			//getdaystypes();
 			getFieldConfiguration();
 			$scope.commentLength = 10;
 			$scope.pagination = {
 				    currentPage: 1
 				};
+			
 			//$scope.currentPage = 1;
 			$scope.limit= 10;
 			$scope.campaignConfigurationList = [];
 			getcampaignConfigurationList();
 			$scope.saveUnConfigCampaigns =[];
+			
+			$scope.configuration.canBeReachedStatusIds = [];
+			$scope.configuration.canNotBeReachedStatusIds = [];
+		    $scope.dropdownSetting = {
+		        scrollable: true,
+		        scrollableHeight : '200px'
+		    }
 			  
 			  
 			  
@@ -35,14 +45,18 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 			$scope.switchMessage = function (value) {
 				$scope[value] = !$scope[value];
 			};
-			  
+			  //Getting Contact Status mapping labels and their respective dropdowns
     		function getstatus()
     		{  
 	    		var deferred = $q.defer();
 	    	      $http.get('users/getstatus').then(
 						function(response) {
 							console.log(response)
-							$scope.mappings=response.data;
+							$scope.contactStatusList = response.data.contactStatusList;
+							
+							angular.forEach(response.data.campaignContactStatusList, function (value, index) {
+					            $scope.campaignContactStatusList.push({ id: value.campaignContactStatusId, label: value.campaignStatus });
+					        });
 							deferred.resolve(response.data);
 	
 						}, function(errResponse) {
@@ -52,8 +66,8 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 	
 						return deferred.promise;
     		}
-				
-    		function getdaystypes()
+			//Getting day types for dropdown	
+    		/*function getdaystypes()
     		{
     			var deferred = $q.defer();
     			$http.get('users/getdaystype').then(
@@ -74,8 +88,9 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 						deferred.reject(errResponse);
 					});
 					return deferred.promise;
-    		}
+    		}*/
     		
+    		//Getting field configuration default values
     		function getFieldConfiguration(){
     			var parameters = {
     					userId:Session.id
@@ -93,6 +108,8 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
     					deferred.resolve(result);
     					if(null != result){
     						 $scope.configuration = result;
+    						 $rootScope.canBeReachedArray = result.canBeReachedStatusIds;
+    						 $rootScope.canNotBeReachedArray = result.canNotBeReachedStatusIds;
     					}
     					
     					 
@@ -103,9 +120,11 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
     				//}
     				return deferred.promise;
     		}
-    		$scope.saveFieldConfig=function() {
-    			        console.log($scope.configuration);
-    			        if($scope.configuration.campaignContactStatus == undefined && $scope.configuration.campaignContactStatus ==null )
+    		
+    		//Saving field configuration form data
+    		$scope.saveFieldConfig=function(ev) {
+    			       /* console.log($scope.configuration);
+    			        if($scope.configuration.campaignStatusSelected == undefined && $scope.configuration.campaignStatusSelected ==null )
     			        {
     			        	$scope.campaignMsg = 'Please select either one of the status.';
 							$window.scrollTo(0, 0);
@@ -139,16 +158,49 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
     									
     								},
     								function(errResponse){
-    									console.error('Error while save filed configuration');
+    									console.error('Error while save field configuration');
     									deferred.reject(errResponse);
     								}
     							);
     							return deferred.promise;
-    			        }
-    			 }
-    			      
+    			        }*/
+    			if($scope.configuration.canBeReachedStatusIds.length == 0 && $scope.configuration.canNotBeReachedStatusIds.length ==0){
+    				
+    				 var alert = $mdDialog.alert()
+ 			        .title('Error')
+ 			        .content('Please select Atleast one Contact Status mapping')
+ 			        .targetEvent(ev)
+ 			        .ok('Ok')
+ 			        
+ 			      $mdDialog.show(alert)
+    			}else{
+    				$scope.configuration.userId = Session.id;
+    		        var deferred = $q.defer();
+    				//if ($scope.userForm.$valid) {
+    				ConfigurationService.addFieldConfiguration($scope.configuration)
+    					.then(
+    					function (response) {
+    						deferred.resolve(response);
+    						
+    						if(response == 1) {
+    							$scope.messages = 'Field Configuration details added successfully.';
+    							$window.scrollTo(0, 0);
+    						} else {
+    							$scope.messages = 'Unable to add Field Confirutaion';
+    							$window.scrollTo(0, 0);
+    						}
+    						
+    						
+    					},
+    					function(errResponse){
+    						console.error('Error while save field configuration');
+    						deferred.reject(errResponse);
+    					}
+    				);
+    				return deferred.promise;
+    			}
     		}
-    	  
+    	  //Saving Campaign configuration data
     		 $scope.saveCampaignConfig=function() {
     			 
 		           var deferred = $q.defer();
@@ -208,7 +260,7 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 	    		$scope.stateList=country.states;
 			};
 			
-			
+			//Getting Campaign configuration list
 			 function getcampaignConfigurationList() {
 
 				 var begin = (($scope.pagination.currentPage - 1) * $scope.limit)
@@ -220,7 +272,7 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 				    	 console.log(response);
 				       $scope.total = response.data.totalCount;
 				       angular.copy(response.data.configurationList, $scope.campaignConfigurationList);
-				       $scope.campaignConfigurationList=response.data.configurationList;
+				       $scope.campaignConfigurationList = response.data.configurationList;
 				       if($scope.campaignConfigurationList.length == 0){
 				    	   angular.copy("No Records found", $scope.tableMessage);
 				       }
@@ -252,7 +304,7 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 				    	getDeConfiguration(deconfigureList,ev);
 				    }
 			 }
-			
+			//Deconfiguring selected record in the list
 			 function getDeConfiguration(deconfigureList,ev){
 				 var confirm = $mdDialog.confirm()
 				  .title('Deconfigure campaigne')
@@ -290,6 +342,7 @@ myapp.controller('ConfigController', function ($scope,$http,$q,Session,$window,C
 			  
 			});
 	   }
+			 
 			 $scope.clearfield = function()
 			 {
 				 $http({

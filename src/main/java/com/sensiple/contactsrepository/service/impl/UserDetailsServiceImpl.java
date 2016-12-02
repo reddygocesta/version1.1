@@ -32,12 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		return userDetailsDao.forgotPassword(emailAddress);
 	}
 
-	@Override
-	public List<Role> getRole() throws Exception {
-
-		return userDetailsDao.getRole();
-	}
-
+	
 	@Override
 	public Role role(int roleid) throws Exception {
 		return userDetailsDao.role(roleid);
@@ -83,11 +78,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	@Override
-	public List<User> searchByFirstName(User user) throws Exception {
-		return userDetailsDao.searchByFirstName(user);
-	}
-
-	@Override
 	public boolean isEmailExist(String emailAddress) throws Exception {
 		return userDetailsDao.isEmailExist(emailAddress);
 	}
@@ -108,9 +98,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	}
 
 	@Override
-	public List<CampaignContactStatus> getCompaignContactStatusList(int id)
+	public List<CampaignContactStatus> getCompaignContactStatusList()
 			throws Exception {
-		return userDetailsDao.getStatusMappings(id);
+		return userDetailsDao.getStatusMappings();
 	}
 
 	@Override

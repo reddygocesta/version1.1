@@ -23,6 +23,11 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 
 import com.sensiple.contactsrepository.security.RestUnauthorizedEntryPoint;
 
+/**
+ * This is class is used to defind the Spring Security configuration 
+ * @author narasimhareddyk
+ *
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -35,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public SecurityConfig() {
         super();
-        logger.info("loading SecurityConfig ................................................ ");
+        logger.info("loading SecurityConfig");
     }
 
     @Autowired
@@ -72,7 +77,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers("/failure").permitAll()
                 .antMatchers("/forgotPassword").permitAll()
-                .antMatchers("/v2/api-docs").hasAnyAuthority("admin")
                 .antMatchers("/users/**").permitAll()
                 .antMatchers("/contact/**").permitAll()
                 .antMatchers("/common/**").permitAll()

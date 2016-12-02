@@ -1,4 +1,4 @@
-<div class="dashboardPanel" data-ng-controller="HomeController">
+<div class="dashboardPanel">
 	<!-- navbar -->
 	<div data-ng-include="'partials/navbar.html'"></div>
 	<div class="wrapper" data-ng-class="myClass">
@@ -35,21 +35,22 @@
 															tooltip="This is the global lead time for a Campaign which decides the availability of a contact"
 															tooltip-placement="right"><sup><i
 																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
-														<div class="col-md-3">
+														<div class="col-md-2">
 															<input type="number" wm-block wm-block-length="2"
 																class="form-control"
 																data-ng-model="configuration.campaignLeadTime" min="1"
-																max="999" ng-keypress="updateBody()" required>
+																max="366" ng-keypress="updateBody()" name="campaignLeadTime" required>
 																<input type ="hidden" data-ng-model = "configuration.userId" />
 														</div>
-														<div class="col-md-3">
+														<p data-ng-show="form.configuration.campaignLeadTime.$error.max" class="help-block col-md-12">Campaign Lead Time should be between 1 to 366</p>
 
-															<select class="form-control" 
+															<!-- <select class="form-control" 
 																data-ng-model="configuration.campaignLeadTimeType"
 																ng-options="day as day.name for day in daytypes track by day.id"
 																required>
-															</select>
-														</div>
+															</select> -->
+															<label class="control-label" for="">Days</label>
+														
 														
 													</div>
 												</div>
@@ -61,17 +62,19 @@
 															tooltip="The time before which a user is allowed to assign contacts to a campaign"
 															tooltip-placement="right"><sup><i
 																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
-														<div class="col-md-3">
+														<div class="col-md-2">
 															<input type="number" wm-block wm-block-length="2"
 																class="form-control"
 																data-ng-model="configuration.allowAssignContacts"
-																 min="1" max="999" ng-keypress="updateBody()" required>
+																 min="1" max="366" ng-keypress="updateBody()" name = "allowAssignContacts" required>
 														</div>
-														<div class="col-md-3">
+														<p data-ng-show="form.configuration.allowAssignContacts.$error.max" class="help-block col-md-12">Allow Assign Contacts should be between 1 to 366</p>
+														<label class="control-label" for="">Days</label>
+														<!-- <div class="col-md-3">
 															<select class="form-control" data-ng-model="configuration.allowAssignContactsType"
 																data-ng-options="day as day.name for day in daytypes track by day.id">
 															</select>
-														</div>
+														</div> -->
 													</div>
 													
 												</div>
@@ -83,18 +86,20 @@
 															tooltip="The time after which the contacts deleted are completely deleted from the system"
 															tooltip-placement="right"><sup><i
 																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
-														<div class="col-md-3">
+														<div class="col-md-2">
 															<input type="number" wm-block wm-block-length="2"
 																class="form-control"
 																data-ng-model="configuration.deleteThreshold" 
-																 min="1" max="999" ng-keypress="updateBody()" required>
+																 min="1" max="366" ng-keypress="updateBody()" name="deleteThreshold" required>
 														</div>
-														<div class="col-md-3">
+														<p data-ng-show="form.configuration.deleteThreshold.$error.max" class="help-block col-md-12">Delete Threshold should be between 1 to 366</p>
+														<label class="control-label" for="">Days</label>
+														<!-- <div class="col-md-3">
 															<select class="form-control"
 																data-ng-model="configuration.deleteThresholdType"
 																data-ng-options="day as day.name for day in daytypes track by day.id">
 															</select>
-														</div>
+														</div> -->
 													</div>
 												</div>
 												<div class="form-horizontal">
@@ -105,18 +110,20 @@
 															tooltip="The time after which search criteria save with a name is auto deleted"
 															tooltip-placement="right"><sup><i
 																	class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
-														<div class="col-md-3">
+														<div class="col-md-2">
 															<input type="number" wm-block wm-block-length="1"
 																class="form-control"
 																data-ng-model="configuration.saveSearchThreshold"
-																  min="1" max="99" ng-keypress="updateBody()" required>
+																  min="1" max="366" ng-keypress="updateBody()" name = "saveSearchThreshold" required>
 														</div>
-														<div class="col-md-3">
+														<p data-ng-show="form.configuration.saveSearchThreshold.$error.max" class="help-block col-md-12">Save Search Threshold should be between 1 to 366</p>
+														<label class="control-label" for="">Days</label>
+														<!-- <div class="col-md-3">
 															<select class="form-control"
 																data-ng-model="configuration.saveSearchThresholdType"
 																data-ng-options="day as day.name for day in daytypes track by day.id">
 															</select>
-														</div>
+														</div> -->
 													</div>
 												</div>
 											</div>
@@ -127,19 +134,22 @@
 
 										<div class="panel panel-default">
 											<div class="panel-body">
-												<fieldset data-ng-repeat="mapping in mappings">
 													<div class="form-horizontal">
 														<div class="form-group">
-															<label class="col-md-6 control-label" for="fields">{{mapping.status}}</label>
+															<label class="col-md-4 control-label" for="fields">Can Be Reached</label>
 															<div class="col-md-6">
-																<select class="form-control" data-ng-model="configuration.campaignContactStatus"
-																	data-ng-options="status as status.campaignStatus for status in mapping.campaignContactStatus track by status.campaignContactStatusId">
-																	<option value="">Select Status</option>
-																</select>
+                     											<div ng-dropdown-multiselect="" extra-settings="dropdownSetting" options="campaignContactStatusList" selected-model="configuration.canBeReachedStatusIds"  checkboxes="true"></div>
 															</div>
 														</div>
 													</div>
-												</fieldset>
+													<div class="form-horizontal">
+														<div class="form-group">
+															<label class="col-md-4 control-label" for="fields">Can Not Be Reached</label>
+															<div class="col-md-6">
+                     											<div ng-compare-dropdown-multiselect="" extra-settings="dropdownSetting" options="campaignContactStatusList" selected-model="configuration.canNotBeReachedStatusIds"  checkboxes="true"></div>
+															</div>
+														</div>
+													</div>
 											</div>
 											<div class="alert alert-danger" data-ng-show="campaignMsg">
 				                   <button type="button" class="close" data-ng-click="switchMessage('campaignMsg')">x</button>{{campaignMsg}}
@@ -154,15 +164,16 @@
 														tooltip="This is the maximum number of active campaigns that a user can have"
 														tooltip-placement="right"><sup><i
 																class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
-													<div class="col-md-6">
+													<div class="col-md-2">
 														<input type="number" wm-block wm-block-length="2"
 															class="form-control" placeholder="3"
 															data-ng-model="configuration.maximumCompaignsAllowed"
-															 min="1" max="999" ng-keypress="updateBody()" required>
+															 min="1" max="9" ng-keypress="updateBody()" name = "maximumCompaignsAllowed" required>
 													</div>
+													<p data-ng-show="form.configuration.maximumCompaignsAllowed.$error.max" class="help-block col-md-12">Maximum Campaigns Allowed should be between 1 to 9</p>
 												</div>
 											</div>
-											<div class="form-horizontal">
+											<!-- <div class="form-horizontal">
 												<div class="form-group">
 													<label class="col-md-6 control-label" for=""><span
 														class="required">*</span>Contact Availability <span
@@ -179,20 +190,20 @@
 														</select>
 													</div>
 												</div>
-											</div>
+											</div> -->
 										</div>
 									</div>
 								</div>
 								<div class="text-center">
 									<button class="btn btn-success"
-										data-ng-click="saveFieldConfig()"
+										data-ng-click="saveFieldConfig($event)"
 										data-ng-disabled="form.configuration.$invalid">Save</button>
 								</div>
 							</div>
 						</div>
 					</div>
                    </form>
-					<div class="col-md-12">
+				<!-- 	<div class="col-md-12">
 					   
 						<div class="panel panel-default campaign-panel">
 							<div class="panel-body">
@@ -292,7 +303,7 @@
 								
 								
 							</div>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
