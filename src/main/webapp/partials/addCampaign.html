@@ -1,0 +1,534 @@
+<div class="dashboardPanel" data-ng-controller="HomeController">
+<!-- navbar -->
+<div data-ng-include="'partials/navbar.html'"></div>
+<div class="wrapper" data-ng-class="myClass">
+<!-- Sidebar -->
+<div data-ng-include="'partials/sidebar.html'"></div>
+	<!-- Page Content -->
+<div class="page-content-wrapper">
+	<ul class="breadcrumb_nav">
+		<li><a href="#/home">Home</a></li>
+		<li>Campaign Management</li>
+		<li><a href="#/campaigns">Manage Campaign</a></li>
+		<li>Add Campaign</li>
+	</ul>
+    <h2 class="page-title"><i class="fa fa-plus-square" aria-hidden="true"></i> Add Campaign</h2>
+	<div class="add-campaign" >
+		<div class="row">
+		  <form name="form.campaignDetails" data-ng-submit="saveCampaignDetails()" >
+			<div class="col-md-12">
+				<div class="panel panel-default">
+					<div class="panel-body">
+					  <div class="configuration">
+						  <h4 class="panel-title-campaign">Create Campaign</h4>
+							<div class="panel panel-default">
+								<div class="panel-body">
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-horizontal">
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Category</label>
+													<div class="col-md-6"  data-ng-init="fillCampaignCategory()" >
+														<select class="form-control" name="campaignCategory" ng-model="campaignDetails.campaignCategory.campaignName" data-ng-options="campaignCategory.campaignName for campaignCategory in campaignCategoryList" required>
+															<option>Select</option>
+															<option></option>
+														</select><span class="error" ng-show="campaignDetails.campaignCategory.$error.required">Required!</span><br>
+													</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Type</label>
+													<div class="col-md-6" data-ng-init="fillCampaignType()">
+															<select name="campaignType"  class="form-control" ng-model="campaignDetails.campaignType.campaignTypeName" data-ng-options="campaignType.campaignTypeName for campaignType in campaignTypeList"  required>
+															 </select><span class="error" ng-show="campaignType.$error.required">Required!</span><br>
+														</div>
+												</div>
+												
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Subject</label>
+													<div class="col-md-6">
+														<input name="campaignDetails.subject" type="text" class="form-control" wm-block wm-block-length="199" ng-model="campaignDetails.subject" id="" placeholder="" required><span class="error" ng-show="subject.$error.required">Required!</span><br>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Lead Time</label>
+													<div class="col-md-6">
+														<input name="leadTime" type="number" class="form-control" wm-block wm-block-length="1"  ng-model="campaignDetails.leadTime" min="1" ng-change="confirmChange($event,campaignDetails.leadTime)" required><span class="error" ng-show="leadTime.$error.required">Required!</span><br>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Owner Name</label>
+													<div class="col-md-6">
+														<input name="OwnerName" type="text" class="form-control" wm-block wm-block-length="39" addcampaignownerautocomplete ng-model="campaignDetails.OwnerName" ng-blur="clearfield()" required><span class="error" ng-show="OwnerName.$error.required">Required!</span><br>
+													  
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Service Offering</label>
+													<div class="col-md-6">
+														<input name="serviceOffering" type="text" class="form-control" wm-block wm-block-length="99" addserviceautocomplete ng-model="campaignDetails.serviceOffering.serviceName" ng-blur="clearfield()" required><span class="error" ng-show="serviceOffering.$error.required">Required!</span><br>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Business Unit</label>
+													<div class="col-md-6" ng-init="fillCampaignBusinessUnit()">
+														<select name="businessUnit" class="form-control" ng-model='campaignDetails.businessUnit.businessUnitName' data-ng-options="businessUnit.businessUnitName for businessUnit in businessUnitList" required><span class="error" ng-show="businessUnit.$error.required">Required!</span><br>
+															<option>Select</option>
+															<option></option>
+														</select>
+													</div>
+												</div>
+												<!-- <div class="form-group">
+													<label class="col-md-6 control-label" for="">Include Companies? <span data-toggle="tooltip" data-placement="right" title="Include Company Details"><sup><i class="fa fa-info-circle info" aria-hidden="true"></i></sup></span></label>
+													<div class="col-md-6">
+														<input type="checkbox" >
+													</div>
+												</div> -->
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-horizontal">
+												
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Planned Run Date</label>
+													<div class="col-md-6">
+													   <input name="plannedRunDate" type="text" placeholder="Select Date" class="form-control" wm-block wm-block-length="11" ngaddcampaigndatepicker  data-ng-model="campaignDetails.plannedRunDate"  required><span class="error" ng-show="plannedRunDate.$error.required">Required!</span><br>
+													</div>
+												
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for="">Campaign Description</label>
+													<div class="col-md-6">
+														<textarea rows="4"class="form-control" ng-model='campaignDetails.description' ></textarea>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for="">Campaign Contact Limit</label>
+													<div class="col-md-3">
+													  <input type="number" class="form-control"  ng-model='campaignDetails.contactLimit' min="1" >
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for="">Campaign Contact Sheet Limit</label>
+													<div class="col-md-3">
+													  <input type="number" class="form-control"  ng-model='campaignDetails.contactSheetLimit' min="1" >
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Region</label>
+													<div class="col-md-6" data-ng-init="fillCampaignRegion()">
+														
+														<select name="campaignRegion" class="form-control" 
+															data-ng-model="campaignDetails.campaignRegion.regionName" data-ng-options="region.regionName for region in regionList"  required><span class="error" ng-show="campaignRegion.$error.required">Required!</span><br>
+															<option value="" label="Select">Select</option>
+															</select>
+													</div>
+												</div>
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Campaign Lead Time Change Reason</label>
+													<div class="col-md-6">
+													  <input name="leadTimeChangeReason" type="text" class="form-control" name="" wm-block wm-block-length="99" ng-model='campaignDetails.leadTimeChangeReason' id="" placeholder="" required><span class="error" ng-show="leadTimeChangeReason.$error.required">Required!</span><br>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="text-center">
+								<button type="submit" class="btn btn-success" >Next</button>
+								<button class="btn btn-danger">Cancel</button>			
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		  </form>
+		</div>
+	</div>
+	
+	<!-- Add Campaign Next Page  -->
+	
+	<div class="add-campaign2">
+			<div class="row">
+<div class="col-md-12">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="configuration">
+				<div class="panel panel-default">
+					<div class="panel-body">
+					<form  name="form.campaigncontact">
+						<div class="row">
+							<div class="col-md-12 col-md-offset-1">
+								<div class="col-md-6">
+									<div class="form-horizontal">
+										<div class="form-group">
+											<label class="col-md-6 control-label search-name" for="">Search Name</label>
+											<div class="col-md-6">
+												  <input type="text" class="form-control" data-ng-model="campaignContactSearch.contactsearchName" id="contactsearchName" name="contactsearchName" data-ng-searchnameunique="ng-searchnameunique" placeholder="" required>
+												<p data-ng-show="form.campaigncontact.contactsearchName.$error.unique" class="help-block">search Name already exist.</p>
+												</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4 campaign-btns">
+									<button class="btn btn-primary" >Go</button>
+									<button class="btn btn-success" data-ng-click="SaveContactSearch()" >Save</button>
+								</div>
+							</div>
+						</div>
+						</form>
+						<div class="row">
+							<div class="col-md-4">
+								<div class="form-horizontal">
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">Country</label>
+										 <div class="col-md-6" data-ng-init="fillCountryList()">
+											<select name="country" class="form-control" 
+											data-ng-model="campaignContactSearch.countryName" data-ng-options="country.countryName for country in countryList" ng-change="countryChange(campaignContactSearch.countryName)" >
+											<option value="" label="Select Country">Select Country</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">Revenue</label>
+										<div class="col-md-6" data-ng-init="fillRevenues()">
+											<select name="revenue" class="form-control" 
+											data-ng-model="campaignContactSearch.revenue" data-ng-options="revenue.revenueName for revenue in revenueList" >
+											<option value="" label="Select Revenue">Select Revenue</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">Company Size</label>
+										<div class="col-md-6" data-ng-init="fillCompanySizes()">
+											<select name="companySize" class="form-control" 
+											data-ng-model="campaignContactSearch.companySize" data-ng-options="companySize.companySizeName for companySize in companySizesList"  >
+											<option value="" label="Select Company Size">Select Company Size</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-horizontal">
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">State</label>
+										<div class="col-md-6">
+											<select name="state" class="form-control"
+											data-ng-model="campaignContactSearch.stateName" data-ng-options="state.stateName for state in stateList" >
+											<option value="" label="Select State">Select State</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">Industry</label>
+										<div class="col-md-6" data-ng-init="fillIndustries()">
+											<select name="industry" class="form-control" 
+											data-ng-model="campaignContactSearch.industry" data-ng-options="industry.industryName for industry in industryDetailsList"  ng-change="IndustryChange(campaignContactSearch.industry)">
+											<option value="" label="Select Industry">Select Industry</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<div class="form-horizontal">
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">Job Function</label>
+										<div class="col-md-6" data-ng-init="fillJobFunctions()">
+											<select name="jobFunction" class="form-control" 
+											data-ng-model="campaignContactSearch.jobFunction" data-ng-options="jobFunction.jobFunctionName for jobFunction in jobFunctionList"  >
+											<option value="" label="Select Function">Select Function</option>
+											</select>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-6 control-label" for="">SIC Code</label>
+										<div class="col-md-6">
+											<select name="sicCode" class="form-control"
+											data-ng-model="campaignContactSearch.sicCode" data-ng-options="sicCode.sicCodeName for sicCode in sicCodeList" >
+											<option value="" label="Select SIC Code">Select SIC Code</option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>
+								<div class="advanced-search-btn pull-right"><i class="fa fa-plus" aria-hidden="true"></i> Advanced Search</div>
+								<div class="clear"></div>		
+							<div class="advanced-search">
+								<div class="col-md-4">
+									<div class="form-horizontal">
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Contacts for Service Offering</label>
+											<div class="col-md-6">
+										  <input type="text" class="form-control" wm-block wm-block-length="99" contactsearchnameserviceautocomplete  ng-model="campaignContactSearch.service" />
+										  </div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Company</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.companyName" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Email ID</label>
+											<div class="col-md-6">
+											  <input type="email" data-ng-model="campaignContactSearch.contactEmailId" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Phone Number</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.phoneNumber" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Contact Added By</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.contactAddedBy" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-horizontal">
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Company Email Id</label>
+											<div class="col-md-6">
+											  <input type="email" data-ng-model="campaignContactSearch.companyEmailId" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Contact Source</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.contactSource" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">First Name</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.firstName" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Mobile</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.mobile" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Contact Added Date</label>
+											<div class="col-md-6">														   
+										   <md-datepicker data-ng-model="campaignContactSearch.contactAddedDate" md-placeholder="Enter date"></md-datepicker>
+										   <!-- <input type="text" placeholder="Select Date" class="form-control" data-ng-model="contactAddedDate" ngdatepicker > -->
+										</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4">
+									<div class="form-horizontal">
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Zip</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.zipcode" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Website</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.website" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Last Name</label>
+											<div class="col-md-6">
+											  <input type="text" data-ng-model="campaignContactSearch.lastName" class="form-control" id="" placeholder="">
+											</div>
+										</div>
+										<div class="col-md-6" data-ng-init="fillJobTitles()">
+											<select name="campaignContactSearch.jobTitle" class="form-control" 
+											data-ng-model="campaignContactSearch.jobTitle" data-ng-options="jobTitle.jobTitleName for jobTitle in jobTitleList"  >
+											<option value="" label="Select Job Title">Select Job Title</option>
+											</select>
+										</div>
+										<div class="form-group">
+											<label class="col-md-6 control-label" for="">Contact Last Updated</label>
+											<div class="col-md-6">
+										 <md-datepicker data-ng-model="campaignContactSearch.contactUpdateDate" md-placeholder="Enter date"></md-datepicker>
+										</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+								
+								<div class="text-center">
+									<button class="btn btn-info">Search</button>
+									<button class="btn btn-warning">Reset</button>									
+								</div>
+								
+								<div class="alert alert-success text-center">
+									<span>The number of contacts for this Search are <strong>xyz</strong>.</span>
+								</div>
+								<div class="clear"></div>
+								<h4 class="panel-title-campaign">Results</h4>
+								<div class="table-responsive add-campaign-table">
+								<table class="table table-bordered table-striped">
+									<thead>
+										<tr>
+											<th>S.No</th>
+											<th>Contact Email ID</th>
+											<th>First Name</th>
+											<th>Middle Name</th>
+											<th>Last Name</th>
+											<th>Job Title</th>
+											<th>Job Function</th>
+											<th>Contact Source</th>
+											<th>Phone Number</th>
+											<th>Extension</th>
+											<th>Mobile</th>
+											<th>Company</th>
+											<th>Website</th>
+											<th>Revenue</th>
+											<th>Company Size</th>
+											<th>Industry</th>
+											<th>SIC code</th>
+											<th>Company Email Id</th>
+											<th>Address Line 1</th>
+											<th>Address Line 2</th>
+											<th>Suite</th>
+											<th>Country</th>
+											<th>State</th>
+											<th>City</th>
+											<th>Zip</th>
+											<th>Head Quarters</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td scope="row">1</td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<td scope="row">2</td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<td scope="row">3</td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+								</div>
+								<div class="col-sm-offset-11">
+									<ul class="pagination pagination-sm">
+										<li class="disabled">
+											<span>
+												<span aria-hidden="true">&laquo;</span>
+											 </span>
+										</li>
+										<li class="active">
+										  <span>1 <span class="sr-only">(current)</span></span>
+										</li>
+										<li class="disabled">
+											<span>
+												<span aria-hidden="true">&raquo;</span>
+											</span>
+										</li>
+									</ul>
+								</div>
+								<div class="text-center">
+								<button class="btn btn-success">Save</button>
+								<button class="btn btn-danger">Cancel</button>			
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	<div class="copyright-text">Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>. All Rights Reserved.</div>
+<!-- /#page-content-wrapper -->
+</div>
+</div>
+</div>
+
+
+

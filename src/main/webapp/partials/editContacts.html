@@ -1,0 +1,425 @@
+<div class="dashboardPanel">
+<!-- navbar -->
+<div data-ng-include="'partials/navbar.html'"></div>
+<div class="wrapper" data-ng-class="myClass">
+<!-- Sidebar -->
+<div data-ng-include="'partials/sidebar.html'"></div>
+<!-- Page Content -->
+
+<div class="page-content-wrapper">
+	<ul class="breadcrumb_nav">
+		<li><a href="#/home">Home</a></li>
+		<li>Contact Management</li>
+		<li><a href="#/contacts">Manage Contacts</a></li>
+		<li>Add Contact</li>
+	</ul>
+    <h2 class="page-title"><i class="fa fa-plus-square" aria-hidden="true"></i> Add Contact</h2>
+		<div class="add-contact">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel panel-default">
+					<form name="form.contactForm" data-ng-submit="saveContactInfo()" data-ng-init="fillContactList()" autocomplete="off"  novalidate>
+						<div class="panel-body">
+							<div class="configuration">
+									<h4 class="panel-title-campaign">Contact Details</h4>
+								<div class="panel panel-default" data-ng-hide="isContactVisible">
+									<div class="panel-body">
+										<div class="row">
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Contact Email ID</label>
+														<div class="col-md-6">
+														<input type="email" class="form-control" name="email" placeholder="Contact Email ID" data-ng-model="contact.contactEmailId" data-ng-disabled="true" data-ng-minlength="1" data-ng-contact-unique="ng-contact-unique" data-text-maxlength="255" data-lowercase="lowercase" data-email-address="email-address"  data-ng-pattern="/^[a-z]+[a-z0-9._+-]+[a-z0-9]+@[a-z]+\.[a-z.]{2,5}$/" data-lower-case="lower-case" required>
+														
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Last Name</label>
+														<div class="col-md-6">
+														<input type="text" name="lastName"class="form-control" id="" placeholder="Last Name" data-ng-model="contact.lastName" data-ng-minlength="1" data-text-maxlength="50" data-letters-only="letters-only" required>
+														<p data-ng-show="form.contactForm.lastName.$invalid && !form.contactForm.lastName.$pristine" class="help-block">Last Name is required.</p>
+														<p data-ng-show="form.contactForm.lastName.$error.minlength" class="help-block">Last Name is too short.</p>
+														<p data-ng-show="form.contactForm.lastName.$error.maxlength" class="help-block">Last Name is too long.</p>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Contact Source</label >
+														<div class="col-md-6">
+														 <input type="text" class="form-control"  name="contactSource" id="" placeholder="Contact Source" data-ng-model="contact.contactSource" data-ng-minlength="1" data-text-maxlength="100" data-letters-only="letters-only" required>
+														<p data-ng-show="form.contactForm.contactSource.$invalid && !form.contactForm.contactSource.$pristine" class="help-block">Contact Source is required.</p>
+														<p data-ng-show="form.contactForm.contactSource.$error.minlength" class="help-block">Contact Source is too short.</p>
+														<p data-ng-show="form.contactForm.contactSource.$error.maxlength" class="help-block">Contact Source is too long.</p>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Mobile</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="Mobile" data-ng-model="contact.mobile" data-ng-minlength="1" data-text-maxlength="14" data-phone-input="phone-input" >
+														</div>
+													</div>
+													
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>First Name</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" name="firstName"id="" placeholder="First Name" data-ng-model="contact.firstName" data-ng-minlength="1" data-text-maxlength="50" data-letters-only="letters-only" required>
+														<p data-ng-show="form.contactForm.firstName.$invalid && !form.contactForm.firstName.$pristine" class="help-block">First Name is required.</p>
+														<p data-ng-show="form.contactForm.firstName.$error.minlength" class="help-block">First Name is too short.</p>
+														<p data-ng-show="form.contactForm.firstName.$error.maxlength" class="help-block">First Name is too long.</p>
+													</div>
+												</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Job Title</label>
+														<div class="col-md-6" data-ng-init="fillJobTitles()">
+															<select name="jobTitle" class="form-control" 
+															data-ng-model="contact.jobTitleObj" data-ng-options="jobTitle as jobTitle.jobTitleName for jobTitle in jobTitleList track by jobTitle.jobTitleId"  >
+															<option value="" label="Select Job Title">Select Job Title</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Phone Number</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" name="phoneNumber" id="" placeholder="Phone Number" data-ng-model="contact.phoneNumber" data-phone-input="phone-input" data-ng-digit="ng-digit" required>
+                                                         <p data-ng-show="form.contactForm.phoneNumber.$error.digit" class="help-block">Phone Number should be 10 digits.</p>
+														</div>
+													</div>
+													
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Middle Name</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="Middle Name" data-ng-model="contact.middleName" data-ng-minlength="1" data-text-maxlength="50" data-letters-only="letters-only">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Job Function</label>
+														<div class="col-md-6" data-ng-init="fillJobFunctions()">
+															<select name="jobFunction" class="form-control" 
+															data-ng-model="contact.jobFunctionObj" data-ng-options="jobFunction as jobFunction.jobFunctionName for jobFunction in jobFunctionList track by jobFunctionId"  >
+															<option value="" label="Select Function">Select Function</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Extension</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="Extension" data-ng-model="contact.extension" data-ng-minlength="0" data-text-maxlength="5" data-numbers-only="numbers-only">
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+							<div class="panel panel-default">
+							<div class="panel-body" data-ng-hide="isEditNewCompany">
+							<i class="fa fa-times pull-right btn-xs btn btn-danger" aria-hidden="true" data-ng-click="deleteCompanyInfo()"></i>
+							<h4 class="panel-title-campaign">Company Information</h4>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Company</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companyName}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Revenue</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.revenue}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Company Email Id</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companyEmailId}}</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Website</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.website}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>SIC Code</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.sicCode}}</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Company Size</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.companySize}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Industry</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.industry}}</label>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+							</div>
+							
+							<div class="panel-body" data-ng-show="isEditNewCompany">
+									<i class="fa fa-times pull-right btn-xs btn btn-danger" aria-hidden="true" data-ng-show="isCompanyModeChanged" data-ng-click="changeCompanyMode()"></i>
+									<div class="clear"></div>
+									<div class="row">
+										<div class="col-md-4">
+											<div class="form-horizontal">
+												<div class="form-group">
+													<label class="col-md-6 control-label" for=""><span class="required">*</span>Company</label>
+													<div class="col-md-6">
+													
+															<input type="text" class="form-control" data-companynameautocomplete="companynameautocomplete"  data-ng-model="contact.companyDetails.companyName" data-ng-minlength="1" data-text-maxlength="100" data-alpha-numeric="alpha-numeric" data-match-class="highlight" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-hide="isAddCompany" required/>
+															
+															<input type="text" class="form-control" name="companyName" data-ng-model="contact.companyDetails.companyName" data-ng-minlength="1" data-text-maxlength="100" data-alpha-numeric="alpha-numeric" data-ng-show="isAddCompany" data-ng-company-name-unique="ng-company-name-unique" required/>	
+															<p data-ng-show="form.contactForm.companyName.$error.unique" class="help-block">Company Name already exist.</p>
+													</div>
+													
+												</div>
+											</div>
+										</div>
+										<button type="button" class="btn btn-primary" data-ng-hide="isShowAddCompanyBtn" data-ng-click="addCompany()">Add</button>
+										
+									</div>
+										<div class="row" data-ng-show="isShowCompanyInfo">
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Company Website</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" name="website" placeholder="Company Website" data-ng-model="contact.companyDetails.website" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-minlength="1" data-text-maxlength="100" data-ng-model="searchContact.website" data-ng-company-name-unique="ng-company-name-unique" required>
+														 
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Revenue</label>
+														<div class="col-md-6" data-ng-init="fillRevenues()">
+															<select class="form-control" data-ng-model ="contact.companyDetails.revenueDetails" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-options="revenue as revenue.revenueName for revenue in revenueList track by revenue.revenueId" required>
+																<option value="" label="Select Revenue">Select Revenue</option>
+															</select>
+														</div>
+													</div>
+													
+
+
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Company Email ID</label>
+														<div class="col-md-6">
+														  <input type="email" class="form-control" id="" placeholder="Company Email ID" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-model="contact.companyDetails.companyEmailId">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Industry</label>
+														<div class="col-md-6" data-ng-init="fillIndustries()">
+															<select name="industry" class="form-control" 
+															data-ng-model="contact.companyDetails.industryDetails" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-options="industry as industry.industryName for industry in industryDetailsList track by industry.industryId"  data-ng-change="IndustryChange(contact.companyDetails.industryDetails)">
+															<option value="" label="Select Industry">Select Industry</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Company Size</label>
+														
+														<div class="col-md-6" data-ng-init="fillCompanySizes()">
+															<select name="companySize" class="form-control" 
+															data-ng-model="contact.companyDetails.companySizeDetails" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-options="companySize as companySize.companySizeName for companySize in companySizesList track by companySize.sizeId"  >
+															<option value="" label="Select Company Size">Select Company Size</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>SIC Code</label>
+														<div class="col-md-6">
+															<select name="sicCode" class="form-control"
+															data-ng-model="contact.companyDetails.sicCodeDetails" data-ng-disabled="contact.companyDetails.companyId > 0" data-ng-options="sicCode as sicCode.sicCodeName for sicCode in sicCodeList track by sicCode.sicCodeId" >
+															<option value="" label="Select SIC Code">Select SIC Code</option>
+															</select>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+							
+
+						</div>
+						
+						<div class="panel panel-default">
+						
+							<div class="panel-body" data-ng-hide="isEditLocationInfo">
+							<i class="fa fa-times pull-right btn-xs btn btn-danger" aria-hidden="true" data-ng-click="deleteLocationInfo()"></i>
+							<h4 class="panel-title-campaign">Location Details</h4>
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Address Line1</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.addressLine1}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Country</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.country.countryName}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Zip</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.zipCode}}</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Address Line2</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.addressLine2}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>State</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.state.stateName}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-1 control-label" for=""><input type="checkbox" ng-model="contact.companyId.addressDetails[0].headQuarters" ng-disabled="true" checked></label>
+												<label class="col-md-6 control-label" for="">Head Quarters</label>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<div class="form-horizontal">
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>Suite</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.suite}}</label>
+											</div>
+											<div class="form-group">
+												<label class="col-md-6 control-label" for=""><strong>City</strong></label>
+												<label class="col-md-6 control-label" for="">{{contact.companyDetails.addressDetail.city}}</label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="panel-body" data-ng-show="isEditLocationInfo">
+									<i class="fa fa-times pull-right btn-xs btn btn-danger" aria-hidden="true" data-ng-show="isLocationModeChanged" data-ng-click="changeLocationMode()"></i>
+									<div class="clear"></div>
+										<div class="row">
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group" data-ng-hide="isAddLocation">
+														<label class="col-md-6 control-label" for="">Location</label>
+														<div class="col-md-6">
+															
+															<select name="address" class="form-control" 
+															data-ng-model="contact.companyDetails.addressDetail" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" data-ng-options="addressDetail as addressDetail.location for addressDetail in locationList track by addressDetail.addressId"  data-ng-change="locationChange()">
+															<option value="" label="Select Location">Select Location</option>
+															</select>
+														</div>
+														
+													</div>
+												</div>
+											</div>
+											<button type="button" class="btn btn-primary" data-ng-hide="isShowAddLocationBtn" data-ng-click="addLocation()">Add</button>
+										</div>
+										<div class="row" data-ng-show="isShowLocationInfo">
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Address Line1</label>
+														<div class="col-md-6">
+														
+															<input list="company" type="text" class="form-control" id="" placeholder="Address Line1" data-ng-model="contact.companyDetails.addressDetail.addressLine1" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" data-ng-minlength="1" data-text-maxlength="100">
+																
+														
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>Country</label>
+														<div class="col-md-6" data-ng-init="fillCountryList()">
+															<select name="country" class="form-control" 
+															data-ng-model="contact.companyDetails.addressDetail.country" data-ng-options="country as country.countryName for country in countryList track by country.countryId" data-ng-change="countryChange(contact.companyDetails.addressDetail.country)" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" required>
+															<option value="" label="Select Country">Select Country</option>
+															</select>
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Zip</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" name="zip" placeholder="Zip" data-ng-model="contact.companyDetails.addressDetail.zipCode" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" data-ng-minlength="6" data-text-maxlength="10">
+														  <p data-ng-show="form.contactForm.zip.$error.minlength" class="help-block">Minimum zip code should be 6 digits.</p>
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Address Line2</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="Address Line2" data-ng-model="contact.companyDetails.addressDetail.addressLine2" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" data-ng-minlength="1" data-text-maxlength="100">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>State</label>
+														<div class="col-md-6">
+															<select name="state" class="form-control"
+															data-ng-model="contact.companyDetails.addressDetail.state" data-ng-options="state as state.stateName for state in stateList track by state.stateId" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" required>
+															<option value="" label="Select State">Select State</option>
+															</select>
+														</div>
+													</div>
+													
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-horizontal">
+													<div class="form-group">
+														<label class="col-md-6 control-label" for="">Suite</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="Suite" data-ng-model="contact.companyDetails.addressDetail.suite" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" data-text-maxlength="10">
+														</div>
+													</div>
+													<div class="form-group">
+														<label class="col-md-6 control-label" for=""><span class="required">*</span>City</label>
+														<div class="col-md-6">
+														  <input type="text" class="form-control" id="" placeholder="City" data-ng-model="contact.companyDetails.addressDetail.city" data-ng-minlength="1" data-text-maxlength="50" data-letters-only="letters-only" data-ng-disabled="contact.companyDetails.addressDetail.addressId > 0" required>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+							
+						</div>
+									
+							</div>
+							<div class="text-center">
+							<button type="submit" class="btn btn-success" data-ng-disabled="form.contactForm.$invalid" >Save</button>
+							<a href="#/contacts"><button type="button" class="btn btn-danger" data-ng-click="cancel()">Cancel</button></a>			
+							</div>
+						</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="copyright-text">Copyright @ <a href="https://www.sensiple.com/" target="_blank">www.sensiple.com</a>. All Rights Reserved.</div>
+<!-- /#page-content-wrapper -->
+</div>
+</div>
+</div>
